@@ -35,3 +35,4 @@ git-ask-pass.sh
 /go-diagrams/
 /.run/
 pprof
+__debug_bin

@@ -70,6 +70,7 @@ K3D                   := $(shell if [[ "`which kubectl`" != '' ]] && [[ "`kubect
 LOG_LEVEL             := debug
 UPPERIO_DB_DEBUG      := 0
 NAMESPACED            := true
+PROCFILE := $(shell EXCLUDE=$(EXCLUDE) ./hack/prepare-procfile.sh)
 
 ifeq ($(PROFILE),prometheus)
 RUN_MODE              := kubernetes
@@ -426,7 +427,8 @@ test-images:
 	$(call docker_pull,python:alpine3.6)
 
 $(GOPATH)/bin/goreman:
-	go get github.com/mattn/goreman
+	# use GO111MODULE=off so it won't add this to go.mod
+	GO111MODULE=off go get github.com/mattn/goreman
 
 .PHONY: start
 ifeq ($(RUN_MODE),kubernetes)
@@ -455,7 +457,7 @@ endif
 	sleep 10s
 	./hack/port-forward.sh
 ifeq ($(RUN_MODE),local)
-	env DEFAULT_REQUEUE_TIME=$(DEFAULT_REQUEUE_TIME) SECURE=$(SECURE) ALWAYS_OFFLOAD_NODE_STATUS=$(ALWAYS_OFFLOAD_NODE_STATUS) LOG_LEVEL=$(LOG_LEVEL) UPPERIO_DB_DEBUG=$(UPPERIO_DB_DEBUG) VERSION=$(VERSION) AUTH_MODE=$(AUTH_MODE) NAMESPACED=$(NAMESPACED) NAMESPACE=$(KUBE_NAMESPACE) $(GOPATH)/bin/goreman -set-ports=false -logtime=false start
+	env DEFAULT_REQUEUE_TIME=$(DEFAULT_REQUEUE_TIME) SECURE=$(SECURE) ALWAYS_OFFLOAD_NODE_STATUS=$(ALWAYS_OFFLOAD_NODE_STATUS) LOG_LEVEL=$(LOG_LEVEL) UPPERIO_DB_DEBUG=$(UPPERIO_DB_DEBUG) VERSION=$(VERSION) AUTH_MODE=$(AUTH_MODE) NAMESPACED=$(NAMESPACED) NAMESPACE=$(KUBE_NAMESPACE) $(GOPATH)/bin/goreman  -f $(PROCFILE) -set-ports=false -logtime=false start
 endif
 
 .PHONY: wait
