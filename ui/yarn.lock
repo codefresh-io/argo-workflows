@@ -183,7 +183,7 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@16.4.6", "@types/react@16.8.5", "@types/react@^16.8.5", "@types/react@^16.x":
+"@types/react@*", "@types/react@16.4.6", "@types/react@16.8.5", "@types/react@^16.8.5":
   version "16.8.5"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.8.5.tgz#03b9a6597bc20f6eaaed43f377a160f7e41c2b90"
   integrity sha512-8LRySaaSJVLNZb2dbOGvGmzn88cbAfrgDpuWy+6lLgQ0OJFgHHvyuaCX4/7ikqJlpmCPf4uazJAZcfTQRdJqdQ==
@@ -5019,12 +5019,11 @@ react-moment@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-moment/-/react-moment-1.0.0.tgz#aedac867cd08739065799de9452c898d954ba6d7"
   integrity sha512-J4iIiwUT4oZcL7cp2U7naQKbQtqvmzGXXBMg/DLj+Pi7n9EW0VhBRx/1aJ1Tp2poCqTCAPoadLEoUIkReGnNNg==
 
-react-monaco-editor@^0.36.0:
-  version "0.36.0"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.36.0.tgz#ac085c14f25fb072514c925596f6a06a711ee078"
-  integrity sha512-JVA5SZhOoYZ0DCdTwYgagtRb3jHo4KN7TVFiJauG+ZBAJWfDSTzavPIrwzWbgu8ahhDqDk4jUcYlOJL2BC/0UA==
+react-monaco-editor@^0.41.2:
+  version "0.41.2"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.41.2.tgz#7ec9cadc101d73003a908fca61c50011f237d2b5"
+  integrity sha512-0nNqkkSLtUQDHtcCASv3ccYukD+P2uvFzcFZGh6iWg9RZF3Rj9/+jqsTNo2cl4avkX8JVGC/qnZr/g7hxXTBTQ==
   dependencies:
-    "@types/react" "^16.x"
     monaco-editor "*"
     prop-types "^15.7.2"
 
