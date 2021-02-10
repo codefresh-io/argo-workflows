@@ -11,7 +11,7 @@
         "lint": "tslint --fix -p ./src/app"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-free": "^5.12.0",
+        "@fortawesome/fontawesome-free": "^5.15.2",
         "@types/dagre": "^0.7.44",
         "argo-ui": "https://github.com/argoproj/argo-ui.git",
         "chart.js": "^2.9.4",
