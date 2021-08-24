@@ -2970,10 +2970,10 @@ cron-parser@^2.16.3:
     is-nan "^1.3.0"
     moment-timezone "^0.5.31"
 
-cronstrue@^1.109.0:
-  version "1.109.0"
-  resolved "https://registry.yarnpkg.com/cronstrue/-/cronstrue-1.109.0.tgz#9c17e0c392eb32ae6678b5f02d65042cfcea554a"
-  integrity sha512-l4ShtlLtQmg5Nc7kDyD0VekVHPw91sLVn8I57TFssnDmIA9G8BObNrkDLMS34+k7N7WgjQE9hCQfv7Zfv+jUHg==
+cronstrue@^1.114.0:
+  version "1.116.0"
+  resolved "https://registry.yarnpkg.com/cronstrue/-/cronstrue-1.116.0.tgz#1f3a75c93bcffdbb4a0a5f72fba523c04ef18180"
+  integrity sha512-nHU83oaNsRDqKFmjr5C+3yZFC4SVAgjgkuW1NyyF6/w+3H1NJE8MgHVVSGk48sbbRNnfcO9I2OdAn7SFXT3aXg==
 
 cross-fetch@^3.0.6:
   version "3.0.6"
