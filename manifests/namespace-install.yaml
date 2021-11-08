@@ -453,7 +453,7 @@ spec:
       - args:
         - server
         - --namespaced
-        image: docker.io/argoproj/argocli:latest
+        image: quay.io/codefresh/argocli:latest
         name: argo-server
         ports:
         - containerPort: 2746
