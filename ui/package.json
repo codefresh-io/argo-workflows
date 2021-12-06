@@ -24,7 +24,7 @@
         "js-yaml": "^3.13.1",
         "json-merge-patch": "^0.2.3",
         "moment": "^2.24.0",
-        "monaco-editor": "0.20.0",
+        "monaco-editor": "0.30.1",
         "prop-types": "^15.7.2",
         "react": "^16.8.3",
         "react-chartjs-2": "^2.9.0",
