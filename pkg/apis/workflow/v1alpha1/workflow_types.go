@@ -854,7 +854,7 @@ type Artifact struct {
 }
 
 type ArtifactByManifestRequest struct {
-	Workflow *Workflow `protobuf:"bytes,1,opt,name=workflow,proto3" json:"workflow,omitempty"`
+	Workflow *Workflow `protobuf:"bytes,1,opt,name=workflow" json:"workflow,omitempty"`
 }
 
 // PodGC describes how to delete completed pods as they complete
