@@ -100,7 +100,11 @@ message Artifact {
   optional bool deleted = 13;
 }
 
-// ArtifactGC describes how to delete artifacts from completed Workflows - this is embedded into the WorkflowLevelArtifactGC, and also used for individual Artifacts to override that as needed
+message ArtifactByManifestRequest {
+  optional Workflow workflow = 1;
+}
+
+// ArtifactGC describes how to delete artifacts from completed Workflows
 message ArtifactGC {
   // Strategy is the strategy to use.
   // +kubebuilder:validation:Enum="";OnWorkflowCompletion;OnWorkflowDeletion;Never
