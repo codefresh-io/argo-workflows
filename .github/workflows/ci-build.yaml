@@ -81,12 +81,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - run: echo ::set-env name=GHA_BRANCH::$(echo $GITHUB_REF | awk -F / '{print $3}')
-        shell: bash
       - name: Checkout code of Argo
         uses: actions/checkout@v3
         with:
-          repository: argoproj/${{ env.GHA_BRANCH }}
+          repository: argoproj/${GITHUB_REPOSITORY#*/}
           path: argo
           ref: ${{ github.base_ref }}
       - name: Replace test directory by Argo code
