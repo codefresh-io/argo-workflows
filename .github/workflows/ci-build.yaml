@@ -84,7 +84,7 @@ jobs:
       - name: Checkout code of Argo
         uses: actions/checkout@v3
         env:
-          ARGO_BRANCH: ${GITHUB_REPOSITORY#*/}
+          ARGO_BRANCH: ${{ GITHUB_REPOSITORY#*/ }}
         with:
           repository: argoproj/${{ env.ARGO_BRANCH }}
           path: argo
