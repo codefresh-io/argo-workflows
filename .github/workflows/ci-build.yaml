@@ -83,8 +83,10 @@ jobs:
         uses: actions/checkout@v3
       - name: Checkout code of Argo
         uses: actions/checkout@v3
+        env:
+          ARGO_BRANCH: ${GITHUB_REPOSITORY#*/}
         with:
-          repository: argoproj/${GITHUB_REPOSITORY#*/}
+          repository: argoproj/${{ env.ARGO_BRANCH }}
           path: argo
           ref: ${{ github.base_ref }}
       - name: Replace test directory by Argo code
