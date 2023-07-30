@@ -223,7 +223,7 @@ jobs:
             -a "workflow=${{ github.workflow }}" \
             -a "sha=${{ github.sha }}" \
             -y \
-            "${repo}@${digest}"
+            "${repo}/${target}@${digest}"
           done
 
   test-images-linux-amd64:
