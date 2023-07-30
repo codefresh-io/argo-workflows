@@ -22,7 +22,7 @@ permissions:
 
 env:
   OCI_REGISTRY: quay.io
-  OCI_REGISTRY_REPO: ${{ env.QUAYIO_ORG }}
+  OCI_REGISTRY_REPO: ${{ vars.QUAYIO_ORG }}
   OCI_REGISTRY_USERNAME: ${{ secrets.QUAYIO_USERNAME }}
   OCI_REGISTRY_PASSWORD: ${{ secrets.QUAYIO_PASSWORD }}
 
