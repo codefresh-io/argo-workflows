@@ -167,7 +167,7 @@ jobs:
             image_name="${image_name#/}" # remove leading slash if OCI_REGISTRY is empty
 
             docker build --target $target -t $image_name -f Dockerfile.windows .
-            docker push image_name
+            docker push $image_name
           done
 
   push-images:
