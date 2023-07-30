@@ -143,7 +143,7 @@ jobs:
   build-windows:
     name: Build & push windows
     #if: github.repository == 'codefresh-io/argo-workflows'
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v2
 
@@ -242,7 +242,7 @@ jobs:
   test-images-windows:
     name: Try pulling windows
     #if: github.repository == 'codefresh-io/argo-workflows'
-    runs-on: windows-2019
+    runs-on: windows-2022
     needs: [ push-images ]
     steps:
 
