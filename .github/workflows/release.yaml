@@ -187,7 +187,7 @@ jobs:
 
       - name: Push Multiarch Image
         run: |
-          echo $(jq -c '. + { "experimental": "enabled" }' ${DOCKER_CONFIG}/config.json) > ${DOCKER_CONFIG}/config.json
+          echo $(jq -c '. + { "experimental": "enabled" }' ${HOME}/.docker/config.json) > ${HOME}/.docker/config.json
 
           tag=$(basename $GITHUB_REF)
           if [ $tag = "master" ]; then
