@@ -196,7 +196,7 @@ jobs:
 
           targets="workflow-controller argoexec argocli"
           for target in $targets; do
-            image_name="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}/${TARGET}:${tag}"
+            image_name="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}/${target}:${tag}"
             image_name="${image_name#/}" # remove leading slash if OCI_REGISTRY is empty
 
             if [ $target = "argoexec" ]; then
