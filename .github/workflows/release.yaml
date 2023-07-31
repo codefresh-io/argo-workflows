@@ -20,6 +20,12 @@ defaults:
 permissions:
   contents: read
 
+env:
+  OCI_REGISTRY: quay.io
+  OCI_REGISTRY_REPO: ${{ vars.QUAYIO_ORG }}
+  OCI_REGISTRY_USERNAME: ${{ secrets.QUAYIO_USERNAME }}
+  OCI_REGISTRY_PASSWORD: ${{ secrets.QUAYIO_PASSWORD }}
+
 jobs:
   build-linux-amd64:
     name: Build & push linux/amd64
@@ -46,23 +52,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.platform }}-${{ matrix.target }}-buildx-
 
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
-
       - name: Docker Login
         uses: docker/login-action@v2
         with:
-          registry: quay.io
-          username: ${{ secrets.QUAYIO_USERNAME }}
-          password: ${{ secrets.QUAYIO_PASSWORD }}
+          registry: ${{ env.OCI_REGISTRY }}
+          username: ${{ env.OCI_REGISTRY_USERNAME }}
+          password: ${{ env.OCI_REGISTRY_PASSWORD }}
 
       - name: Docker Buildx
         env:
-          DOCKERIO_ORG: ${{ secrets.DOCKERIO_ORG }}
           PLATFORM: ${{ matrix.platform }}
           TARGET: ${{ matrix.target }}
         run: |
@@ -72,16 +70,8 @@ jobs:
           fi
 
           tag_suffix=$(echo $PLATFORM | sed -r "s/\//-/g")
-          image_name="${DOCKERIO_ORG}/${TARGET}:${tag}-${tag_suffix}"
-
-          ## Codefresh - remove dockerhub
-          # docker buildx build \
-          #   --cache-from "type=local,src=/tmp/.buildx-cache" \
-          #   --cache-to "type=local,dest=/tmp/.buildx-cache" \
-          #   --output "type=image,push=true" \
-          #   --platform="${PLATFORM}" \
-          #   --target $TARGET \
-          #   --tag $image_name .
+          image_name="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}/${TARGET}:${tag}-${tag_suffix}"
+          image_name="${image_name#/}" # remove leading slash if OCI_REGISTRY is empty
 
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
@@ -89,7 +79,7 @@ jobs:
             --output "type=image,push=true" \
             --platform="${PLATFORM}" \
             --target $TARGET \
-            --tag quay.io/$image_name .
+            --tag $image_name .
 
   build-linux-arm64:
     name: Build & push linux/arm64
@@ -121,23 +111,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.platform }}-${{ matrix.target }}-buildx-
 
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
-
       - name: Docker Login
         uses: docker/login-action@v2
         with:
-          registry: quay.io
-          username: ${{ secrets.QUAYIO_USERNAME }}
-          password: ${{ secrets.QUAYIO_PASSWORD }}
+          registry: ${{ env.OCI_REGISTRY }}
+          username: ${{ env.OCI_REGISTRY_USERNAME }}
+          password: ${{ env.OCI_REGISTRY_PASSWORD }}
 
       - name: Docker Buildx
         env:
-          DOCKERIO_ORG: ${{ secrets.DOCKERIO_ORG }}
           PLATFORM: ${{ matrix.platform }}
           TARGET: ${{ matrix.target }}
         run: |
@@ -147,16 +129,8 @@ jobs:
           fi
 
           tag_suffix=$(echo $PLATFORM | sed -r "s/\//-/g")
-          image_name="${DOCKERIO_ORG}/${TARGET}:${tag}-${tag_suffix}"
-
-          ## Codefresh - remove dockerhub
-          # docker buildx build \
-          #   --cache-from "type=local,src=/tmp/.buildx-cache" \
-          #   --cache-to "type=local,dest=/tmp/.buildx-cache" \
-          #   --output "type=image,push=true" \
-          #   --platform="${PLATFORM}" \
-          #   --target $TARGET \
-          #   --tag $image_name .
+          image_name="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}/${TARGET}:${tag}-${tag_suffix}"
+          image_name="${image_name#/}" # remove leading slash if OCI_REGISTRY is empty
 
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
@@ -164,34 +138,24 @@ jobs:
             --output "type=image,push=true" \
             --platform="${PLATFORM}" \
             --target $TARGET \
-            --tag quay.io/$image_name .
+            --tag $image_name .
 
   build-windows:
     name: Build & push windows
     if: github.repository == 'codefresh-io/argo-workflows'
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v2
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
 
-      - name: Login to Quay
-        uses: Azure/docker-login@v1
+      - name: Docker Login
+        uses: docker/login-action@v2
         with:
-          login-server: quay.io
-          username: ${{ secrets.QUAYIO_USERNAME }}
-          password: ${{ secrets.QUAYIO_PASSWORD }}
+          registry: ${{ env.OCI_REGISTRY }}
+          username: ${{ env.OCI_REGISTRY_USERNAME }}
+          password: ${{ env.OCI_REGISTRY_PASSWORD }}
 
       - name: Build & Push Windows Docker Images
-        env:
-          DOCKERIO_ORG: ${{ secrets.DOCKERIO_ORG }}
         run: |
-          docker_org=$DOCKERIO_ORG
-
           tag=$(basename $GITHUB_REF)
           if [ $tag = "master" ]; then
             tag="latest"
@@ -199,13 +163,11 @@ jobs:
 
           targets="argoexec"
           for target in $targets; do
-            image_name="${docker_org}/${target}:${tag}-windows"
-            docker build --target $target -t $image_name -f Dockerfile.windows .
-            ## Codefresh - remove dockerhub
-            # docker push $image_name
+            image_name="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}/${target}:${tag}-windows"
+            image_name="${image_name#/}" # remove leading slash if OCI_REGISTRY is empty
 
-            docker tag $image_name quay.io/$image_name
-            docker push quay.io/$image_name
+            docker build --target $target -t $image_name -f Dockerfile.windows .
+            docker push $image_name
           done
 
   push-images:
@@ -213,29 +175,27 @@ jobs:
     if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: ubuntu-latest
     needs: [ build-linux-amd64, build-linux-arm64, build-windows ]
+    permissions:
+      contents: read
+      id-token: write # Needed to create an OIDC token for keyless signing
     steps:
       - uses: actions/checkout@v2
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
 
-      - name: Login to Quay
-        uses: Azure/docker-login@v1
+      - name: Docker Login
+        uses: docker/login-action@v2
         with:
-          login-server: quay.io
-          username: ${{ secrets.QUAYIO_USERNAME }}
-          password: ${{ secrets.QUAYIO_PASSWORD }}
+          registry: ${{ env.OCI_REGISTRY }}
+          username: ${{ env.OCI_REGISTRY_USERNAME }}
+          password: ${{ env.OCI_REGISTRY_PASSWORD }}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 # v3.1.1
+        with:
+          cosign-release: 'v2.1.1'
 
       - name: Push Multiarch Image
-        env:
-          DOCKERIO_ORG: ${{ secrets.DOCKERIO_ORG }}
         run: |
-          echo $(jq -c '. + { "experimental": "enabled" }' ${DOCKER_CONFIG}/config.json) > ${DOCKER_CONFIG}/config.json
-
-          docker_org=$DOCKERIO_ORG
+          echo $(jq -c '. + { "experimental": "enabled" }' ${HOME}/.docker/config.json) > ${HOME}/.docker/config.json
 
           tag=$(basename $GITHUB_REF)
           if [ $tag = "master" ]; then
@@ -244,21 +204,26 @@ jobs:
 
           targets="workflow-controller argoexec argocli"
           for target in $targets; do
-            image_name="${docker_org}/${target}:${tag}"
+            image_name="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}/${target}:${tag}"
+            image_name="${image_name#/}" # remove leading slash if OCI_REGISTRY is empty
 
             if [ $target = "argoexec" ]; then
-              ## Codefresh - remove dockerhub
-              # docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64 ${image_name}-windows
-              docker manifest create quay.io/$image_name quay.io/${image_name}-linux-arm64 quay.io/${image_name}-linux-amd64 quay.io/${image_name}-windows
+              docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64 ${image_name}-windows
             else
-              ## Codefresh - remove dockerhub
-              # docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64
-              docker manifest create quay.io/$image_name quay.io/${image_name}-linux-arm64 quay.io/${image_name}-linux-amd64
+              docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64
             fi
 
-            ## Codefresh - remove dockerhub
-            # docker manifest push $image_name
-            docker manifest push quay.io/$image_name
+            docker manifest push $image_name
+
+            repo="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}"
+            repo="${repo#/}" # remove leading slash if OCI_REGISTRY is empty
+            digest=$(skopeo inspect docker://$image_name | jq -r '.Digest')
+            cosign sign \
+            -a "repo=${{ github.repository }}" \
+            -a "workflow=${{ github.workflow }}" \
+            -a "sha=${{ github.sha }}" \
+            -y \
+            "${repo}/${target}@${digest}"
           done
 
   test-images-linux-amd64:
@@ -271,23 +236,15 @@ jobs:
         platform: [ linux/amd64 ]
         target: [ workflow-controller, argocli, argoexec ]
     steps:
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
-
-      - name: Login to Quay
-        uses: Azure/docker-login@v1
+      - name: Docker Login
+        uses: docker/login-action@v2
         with:
-          login-server: quay.io
-          username: ${{ secrets.QUAYIO_USERNAME }}
-          password: ${{ secrets.QUAYIO_PASSWORD }}
+          registry: ${{ env.OCI_REGISTRY }}
+          username: ${{ env.OCI_REGISTRY_USERNAME }}
+          password: ${{ env.OCI_REGISTRY_PASSWORD }}
 
       - name: Docker Buildx
         env:
-          DOCKERIO_ORG: ${{ secrets.DOCKERIO_ORG }}
           PLATFORM: ${{ matrix.platform }}
           TARGET: ${{ matrix.target }}
         run: |
@@ -296,30 +253,24 @@ jobs:
             tag="latest"
           fi
 
-          image_name="${DOCKERIO_ORG}/${TARGET}:${tag}"
-          ## Codefresh - remove dockerhub
-          # docker pull $image_name
-          docker pull quay.io/$image_name
+          image_name="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}/${TARGET}:${tag}"
+          image_name="${image_name#/}" # remove leading slash if OCI_REGISTRY is empty
+          docker pull $image_name
 
   test-images-windows:
     name: Try pulling windows
     if: github.repository == 'codefresh-io/argo-workflows'
-    runs-on: windows-2019
+    runs-on: windows-2022
     needs: [ push-images ]
     steps:
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
 
-      - name: Login to Quay
-        uses: Azure/docker-login@v1
+      - name: Docker Login
+        uses: docker/login-action@v2
         with:
-          login-server: quay.io
-          username: ${{ secrets.QUAYIO_USERNAME }}
-          password: ${{ secrets.QUAYIO_PASSWORD }}
+          registry: ${{ env.OCI_REGISTRY }}
+          username: ${{ env.OCI_REGISTRY_USERNAME }}
+          password: ${{ env.OCI_REGISTRY_PASSWORD }}
+
       - name: Try pulling
         env:
           DOCKERIO_ORG: ${{ secrets.DOCKERIO_ORG }}
@@ -332,15 +283,15 @@ jobs:
 
           targets="argoexec"
           for target in $targets; do
-            image_name="${docker_org}/${target}:${tag}"
-            ## Codefresh - remove dockerhub
-            # docker pull $image_name
-            docker pull quay.io/$image_name
+            image_name="${{ env.OCI_REGISTRY }}/${{ env.OCI_REGISTRY_REPO }}/${target}:${tag}"
+            image_name="${image_name#/}" # remove leading slash if OCI_REGISTRY is empty
+            docker pull $image_name
           done
 
   publish-release:
     permissions:
       contents: write  # for softprops/action-gh-release to create GitHub release
+      id-token: write # Needed to create an OIDC token for keyless signing
     runs-on: ubuntu-latest
     if: github.repository == 'codefresh-io/argo-workflows'
     needs: [ push-images, test-images-linux-amd64, test-images-windows ]
@@ -366,6 +317,10 @@ jobs:
         with:
           path: /home/runner/go/pkg/mod
           key: GOMODCACHE-v2-${{ hashFiles('**/go.mod') }}
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 # v3.1.1
+        with:
+          cosign-release: 'v2.1.1'
       # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
       - run: make release-notes VERSION=${GITHUB_REF##*/}
       - run: cat release-notes
@@ -378,6 +333,9 @@ jobs:
       - name: Print version (please check it is not dirty)
         run: dist/argo-linux-amd64 version
       - run: make checksums
+      - name: Sign checksums and create public key for release assets
+        run: |
+          cosign sign-blob -y ./dist/argo-workflows-cli-checksums.txt > ./dist/argo-workflows-cli-checksums.sig
       # https://github.com/softprops/action-gh-release
       # This will publish the release and upload assets.
       # If a conflict occurs (because you are not on a tag), the release will not be updated. This is a short coming
@@ -390,7 +348,8 @@ jobs:
           body_path: release-notes
           files: |
             dist/argo-*.gz
-            dist/argo-*.gz.sha256
+            dist/argo-workflows-cli-checksums.txt
+            dist/argo-workflows-cli-checksums.sig
             dist/manifests/*.yaml
             dist/sbom.tar.gz
         env:
