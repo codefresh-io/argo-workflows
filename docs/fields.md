@@ -3669,11 +3669,10 @@ RetryNodeAntiAffinity is a placeholder for future expansion, only empty nodeAnti
 
 Synchronization selector
 
-<details>
+<details markdown>
 <summary>Examples with this field (click to open)</summary>
-<br>
 
-- [`input-artifact-git.yaml`](https://github.com/argoproj/argo-workflows/blob/master/examples/input-artifact-git.yaml)
+- [`input-artifact-git.yaml`](https://github.com/argoproj/argo-workflows/blob/main/examples/input-artifact-git.yaml)
 </details>
 
 ### Fields
