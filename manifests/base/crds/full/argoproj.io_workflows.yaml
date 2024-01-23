@@ -1888,6 +1888,15 @@ spec:
                         type: string
                       namespace:
                         type: string
+                      selectors:
+                        items:
+                          properties:
+                            name:
+                              type: string
+                            template:
+                              type: string
+                          type: object
+                        type: array
                     type: object
                   semaphore:
                     properties:
@@ -1904,6 +1913,15 @@ spec:
                         type: object
                       namespace:
                         type: string
+                      selectors:
+                        items:
+                          properties:
+                            name:
+                              type: string
+                            template:
+                              type: string
+                          type: object
+                        type: array
                     type: object
                 type: object
               templateDefaults:
@@ -9374,6 +9392,15 @@ spec:
                             type: string
                           namespace:
                             type: string
+                          selectors:
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                                template:
+                                  type: string
+                              type: object
+                            type: array
                         type: object
                       semaphore:
                         properties:
@@ -9390,6 +9417,15 @@ spec:
                             type: object
                           namespace:
                             type: string
+                          selectors:
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                                template:
+                                  type: string
+                              type: object
+                            type: array
                         type: object
                     type: object
                   timeout:
@@ -17560,6 +17596,15 @@ spec:
                               type: string
                             namespace:
                               type: string
+                            selectors:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  template:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                         semaphore:
                           properties:
@@ -17576,6 +17621,15 @@ spec:
                               type: object
                             namespace:
                               type: string
+                            selectors:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  template:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                       type: object
                     timeout:
@@ -29394,6 +29448,15 @@ spec:
                               type: string
                             namespace:
                               type: string
+                            selectors:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  template:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                         semaphore:
                           properties:
@@ -29410,6 +29473,15 @@ spec:
                               type: object
                             namespace:
                               type: string
+                            selectors:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  template:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                       type: object
                     timeout:
@@ -31961,6 +32033,15 @@ spec:
                             type: string
                           namespace:
                             type: string
+                          selectors:
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                                template:
+                                  type: string
+                              type: object
+                            type: array
                         type: object
                       semaphore:
                         properties:
@@ -31977,6 +32058,15 @@ spec:
                             type: object
                           namespace:
                             type: string
+                          selectors:
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                                template:
+                                  type: string
+                              type: object
+                            type: array
                         type: object
                     type: object
                   templateDefaults:
@@ -39447,6 +39537,15 @@ spec:
                                 type: string
                               namespace:
                                 type: string
+                              selectors:
+                                items:
+                                  properties:
+                                    name:
+                                      type: string
+                                    template:
+                                      type: string
+                                  type: object
+                                type: array
                             type: object
                           semaphore:
                             properties:
@@ -39463,6 +39562,15 @@ spec:
                                 type: object
                               namespace:
                                 type: string
+                              selectors:
+                                items:
+                                  properties:
+                                    name:
+                                      type: string
+                                    template:
+                                      type: string
+                                  type: object
+                                type: array
                             type: object
                         type: object
                       timeout:
@@ -47633,6 +47741,15 @@ spec:
                                   type: string
                                 namespace:
                                   type: string
+                                selectors:
+                                  items:
+                                    properties:
+                                      name:
+                                        type: string
+                                      template:
+                                        type: string
+                                    type: object
+                                  type: array
                               type: object
                             semaphore:
                               properties:
@@ -47649,6 +47766,15 @@ spec:
                                   type: object
                                 namespace:
                                   type: string
+                                selectors:
+                                  items:
+                                    properties:
+                                      name:
+                                        type: string
+                                      template:
+                                        type: string
+                                    type: object
+                                  type: array
                               type: object
                           type: object
                         timeout:
