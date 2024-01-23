@@ -2326,6 +2326,7 @@ Mutex holds Mutex configuration
 |:----------:|:----------:|---------------|
 |`name`|`string`|name of the mutex|
 |`namespace`|`string`|Namespace is the namespace of the mutex, default: [namespace of workflow]|
+|`selectors`|`Array<`[`SyncSelector`](#syncselector)`>`|Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to mutex key to make concurrency more customizable|
 
 ## SemaphoreRef
 
@@ -2336,6 +2337,7 @@ SemaphoreRef is a reference of Semaphore
 |:----------:|:----------:|---------------|
 |`configMapKeyRef`|[`ConfigMapKeySelector`](#configmapkeyselector)|ConfigMapKeyRef is configmap selector for Semaphore configuration|
 |`namespace`|`string`|Namespace is the namespace of the configmap, default: [namespace of workflow]|
+|`selectors`|`Array<`[`SyncSelector`](#syncselector)`>`|Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to semaphore key to make concurrency more customizable|
 
 ## ArtifactLocation
 
@@ -3662,6 +3664,23 @@ MetricLabel is a single label for a prometheus metric
 ## RetryNodeAntiAffinity
 
 RetryNodeAntiAffinity is a placeholder for future expansion, only empty nodeAntiAffinity is allowed. In order to prevent running steps on the same host, it uses "kubernetes.io/hostname".
+
+## SyncSelector
+
+Synchronization selector
+
+<details>
+<summary>Examples with this field (click to open)</summary>
+<br>
+
+- [`input-artifact-git.yaml`](https://github.com/argoproj/argo-workflows/blob/master/examples/input-artifact-git.yaml)
+</details>
+
+### Fields
+| Field Name | Field Type | Description   |
+|:----------:|:----------:|---------------|
+|`name`|`string`|Name of the selector|
+|`template`|`string`|Template replaced with global variables|
 
 ## ContainerNode
 

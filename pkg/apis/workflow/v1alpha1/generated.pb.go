@@ -176,10 +176,38 @@ func (m *Artifact) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Artifact proto.InternalMessageInfo
 
+func (m *ArtifactByManifestRequest) Reset()      { *m = ArtifactByManifestRequest{} }
+func (*ArtifactByManifestRequest) ProtoMessage() {}
+func (*ArtifactByManifestRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_724696e352c3df5f, []int{5}
+}
+func (m *ArtifactByManifestRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ArtifactByManifestRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	b = b[:cap(b)]
+	n, err := m.MarshalToSizedBuffer(b)
+	if err != nil {
+		return nil, err
+	}
+	return b[:n], nil
+}
+func (m *ArtifactByManifestRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ArtifactByManifestRequest.Merge(m, src)
+}
+func (m *ArtifactByManifestRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *ArtifactByManifestRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ArtifactByManifestRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ArtifactByManifestRequest proto.InternalMessageInfo
+
 func (m *ArtifactGC) Reset()      { *m = ArtifactGC{} }
 func (*ArtifactGC) ProtoMessage() {}
 func (*ArtifactGC) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{5}
+	return fileDescriptor_724696e352c3df5f, []int{6}
 }
 func (m *ArtifactGC) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -207,7 +235,7 @@ var xxx_messageInfo_ArtifactGC proto.InternalMessageInfo
 func (m *ArtifactGCSpec) Reset()      { *m = ArtifactGCSpec{} }
 func (*ArtifactGCSpec) ProtoMessage() {}
 func (*ArtifactGCSpec) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{6}
+	return fileDescriptor_724696e352c3df5f, []int{7}
 }
 func (m *ArtifactGCSpec) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -235,7 +263,7 @@ var xxx_messageInfo_ArtifactGCSpec proto.InternalMessageInfo
 func (m *ArtifactGCStatus) Reset()      { *m = ArtifactGCStatus{} }
 func (*ArtifactGCStatus) ProtoMessage() {}
 func (*ArtifactGCStatus) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{7}
+	return fileDescriptor_724696e352c3df5f, []int{8}
 }
 func (m *ArtifactGCStatus) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -263,7 +291,7 @@ var xxx_messageInfo_ArtifactGCStatus proto.InternalMessageInfo
 func (m *ArtifactLocation) Reset()      { *m = ArtifactLocation{} }
 func (*ArtifactLocation) ProtoMessage() {}
 func (*ArtifactLocation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{8}
+	return fileDescriptor_724696e352c3df5f, []int{9}
 }
 func (m *ArtifactLocation) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -291,7 +319,7 @@ var xxx_messageInfo_ArtifactLocation proto.InternalMessageInfo
 func (m *ArtifactNodeSpec) Reset()      { *m = ArtifactNodeSpec{} }
 func (*ArtifactNodeSpec) ProtoMessage() {}
 func (*ArtifactNodeSpec) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{9}
+	return fileDescriptor_724696e352c3df5f, []int{10}
 }
 func (m *ArtifactNodeSpec) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -319,7 +347,7 @@ var xxx_messageInfo_ArtifactNodeSpec proto.InternalMessageInfo
 func (m *ArtifactPaths) Reset()      { *m = ArtifactPaths{} }
 func (*ArtifactPaths) ProtoMessage() {}
 func (*ArtifactPaths) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{10}
+	return fileDescriptor_724696e352c3df5f, []int{11}
 }
 func (m *ArtifactPaths) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -347,7 +375,7 @@ var xxx_messageInfo_ArtifactPaths proto.InternalMessageInfo
 func (m *ArtifactRepository) Reset()      { *m = ArtifactRepository{} }
 func (*ArtifactRepository) ProtoMessage() {}
 func (*ArtifactRepository) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{11}
+	return fileDescriptor_724696e352c3df5f, []int{12}
 }
 func (m *ArtifactRepository) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -375,7 +403,7 @@ var xxx_messageInfo_ArtifactRepository proto.InternalMessageInfo
 func (m *ArtifactRepositoryRef) Reset()      { *m = ArtifactRepositoryRef{} }
 func (*ArtifactRepositoryRef) ProtoMessage() {}
 func (*ArtifactRepositoryRef) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{12}
+	return fileDescriptor_724696e352c3df5f, []int{13}
 }
 func (m *ArtifactRepositoryRef) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -403,7 +431,7 @@ var xxx_messageInfo_ArtifactRepositoryRef proto.InternalMessageInfo
 func (m *ArtifactRepositoryRefStatus) Reset()      { *m = ArtifactRepositoryRefStatus{} }
 func (*ArtifactRepositoryRefStatus) ProtoMessage() {}
 func (*ArtifactRepositoryRefStatus) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{13}
+	return fileDescriptor_724696e352c3df5f, []int{14}
 }
 func (m *ArtifactRepositoryRefStatus) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -431,7 +459,7 @@ var xxx_messageInfo_ArtifactRepositoryRefStatus proto.InternalMessageInfo
 func (m *ArtifactResult) Reset()      { *m = ArtifactResult{} }
 func (*ArtifactResult) ProtoMessage() {}
 func (*ArtifactResult) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{14}
+	return fileDescriptor_724696e352c3df5f, []int{15}
 }
 func (m *ArtifactResult) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -459,7 +487,7 @@ var xxx_messageInfo_ArtifactResult proto.InternalMessageInfo
 func (m *ArtifactResultNodeStatus) Reset()      { *m = ArtifactResultNodeStatus{} }
 func (*ArtifactResultNodeStatus) ProtoMessage() {}
 func (*ArtifactResultNodeStatus) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{15}
+	return fileDescriptor_724696e352c3df5f, []int{16}
 }
 func (m *ArtifactResultNodeStatus) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -487,7 +515,7 @@ var xxx_messageInfo_ArtifactResultNodeStatus proto.InternalMessageInfo
 func (m *ArtifactSearchQuery) Reset()      { *m = ArtifactSearchQuery{} }
 func (*ArtifactSearchQuery) ProtoMessage() {}
 func (*ArtifactSearchQuery) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{16}
+	return fileDescriptor_724696e352c3df5f, []int{17}
 }
 func (m *ArtifactSearchQuery) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -515,7 +543,7 @@ var xxx_messageInfo_ArtifactSearchQuery proto.InternalMessageInfo
 func (m *ArtifactSearchResult) Reset()      { *m = ArtifactSearchResult{} }
 func (*ArtifactSearchResult) ProtoMessage() {}
 func (*ArtifactSearchResult) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{17}
+	return fileDescriptor_724696e352c3df5f, []int{18}
 }
 func (m *ArtifactSearchResult) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -543,7 +571,7 @@ var xxx_messageInfo_ArtifactSearchResult proto.InternalMessageInfo
 func (m *ArtifactoryArtifact) Reset()      { *m = ArtifactoryArtifact{} }
 func (*ArtifactoryArtifact) ProtoMessage() {}
 func (*ArtifactoryArtifact) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{18}
+	return fileDescriptor_724696e352c3df5f, []int{19}
 }
 func (m *ArtifactoryArtifact) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -571,7 +599,7 @@ var xxx_messageInfo_ArtifactoryArtifact proto.InternalMessageInfo
 func (m *ArtifactoryArtifactRepository) Reset()      { *m = ArtifactoryArtifactRepository{} }
 func (*ArtifactoryArtifactRepository) ProtoMessage() {}
 func (*ArtifactoryArtifactRepository) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{19}
+	return fileDescriptor_724696e352c3df5f, []int{20}
 }
 func (m *ArtifactoryArtifactRepository) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -599,7 +627,7 @@ var xxx_messageInfo_ArtifactoryArtifactRepository proto.InternalMessageInfo
 func (m *ArtifactoryAuth) Reset()      { *m = ArtifactoryAuth{} }
 func (*ArtifactoryAuth) ProtoMessage() {}
 func (*ArtifactoryAuth) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{20}
+	return fileDescriptor_724696e352c3df5f, []int{21}
 }
 func (m *ArtifactoryAuth) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -627,7 +655,7 @@ var xxx_messageInfo_ArtifactoryAuth proto.InternalMessageInfo
 func (m *AzureArtifact) Reset()      { *m = AzureArtifact{} }
 func (*AzureArtifact) ProtoMessage() {}
 func (*AzureArtifact) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{21}
+	return fileDescriptor_724696e352c3df5f, []int{22}
 }
 func (m *AzureArtifact) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -655,7 +683,7 @@ var xxx_messageInfo_AzureArtifact proto.InternalMessageInfo
 func (m *AzureArtifactRepository) Reset()      { *m = AzureArtifactRepository{} }
 func (*AzureArtifactRepository) ProtoMessage() {}
 func (*AzureArtifactRepository) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{22}
+	return fileDescriptor_724696e352c3df5f, []int{23}
 }
 func (m *AzureArtifactRepository) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -683,7 +711,7 @@ var xxx_messageInfo_AzureArtifactRepository proto.InternalMessageInfo
 func (m *AzureBlobContainer) Reset()      { *m = AzureBlobContainer{} }
 func (*AzureBlobContainer) ProtoMessage() {}
 func (*AzureBlobContainer) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{23}
+	return fileDescriptor_724696e352c3df5f, []int{24}
 }
 func (m *AzureBlobContainer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -711,7 +739,7 @@ var xxx_messageInfo_AzureBlobContainer proto.InternalMessageInfo
 func (m *Backoff) Reset()      { *m = Backoff{} }
 func (*Backoff) ProtoMessage() {}
 func (*Backoff) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{24}
+	return fileDescriptor_724696e352c3df5f, []int{25}
 }
 func (m *Backoff) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -739,7 +767,7 @@ var xxx_messageInfo_Backoff proto.InternalMessageInfo
 func (m *BasicAuth) Reset()      { *m = BasicAuth{} }
 func (*BasicAuth) ProtoMessage() {}
 func (*BasicAuth) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{25}
+	return fileDescriptor_724696e352c3df5f, []int{26}
 }
 func (m *BasicAuth) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -767,7 +795,7 @@ var xxx_messageInfo_BasicAuth proto.InternalMessageInfo
 func (m *Cache) Reset()      { *m = Cache{} }
 func (*Cache) ProtoMessage() {}
 func (*Cache) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{26}
+	return fileDescriptor_724696e352c3df5f, []int{27}
 }
 func (m *Cache) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -795,7 +823,7 @@ var xxx_messageInfo_Cache proto.InternalMessageInfo
 func (m *ClientCertAuth) Reset()      { *m = ClientCertAuth{} }
 func (*ClientCertAuth) ProtoMessage() {}
 func (*ClientCertAuth) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{27}
+	return fileDescriptor_724696e352c3df5f, []int{28}
 }
 func (m *ClientCertAuth) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -823,7 +851,7 @@ var xxx_messageInfo_ClientCertAuth proto.InternalMessageInfo
 func (m *ClusterWorkflowTemplate) Reset()      { *m = ClusterWorkflowTemplate{} }
 func (*ClusterWorkflowTemplate) ProtoMessage() {}
 func (*ClusterWorkflowTemplate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{28}
+	return fileDescriptor_724696e352c3df5f, []int{29}
 }
 func (m *ClusterWorkflowTemplate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -851,7 +879,7 @@ var xxx_messageInfo_ClusterWorkflowTemplate proto.InternalMessageInfo
 func (m *ClusterWorkflowTemplateList) Reset()      { *m = ClusterWorkflowTemplateList{} }
 func (*ClusterWorkflowTemplateList) ProtoMessage() {}
 func (*ClusterWorkflowTemplateList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_724696e352c3df5f, []int{29}
+	return fileDescriptor_724696e352c3df5f, []int{30}
 }
 func (m *ClusterWorkflowTemplateList) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3312,6 +3340,34 @@ func (m *SuspendTemplate) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SuspendTemplate proto.InternalMessageInfo
 
+func (m *SyncSelector) Reset()      { *m = SyncSelector{} }
+func (*SyncSelector) ProtoMessage() {}
+func (*SyncSelector) Descriptor() ([]byte, []int) {
+	return fileDescriptor_724696e352c3df5f, []int{116}
+}
+func (m *SyncSelector) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SyncSelector) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	b = b[:cap(b)]
+	n, err := m.MarshalToSizedBuffer(b)
+	if err != nil {
+		return nil, err
+	}
+	return b[:n], nil
+}
+func (m *SyncSelector) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SyncSelector.Merge(m, src)
+}
+func (m *SyncSelector) XXX_Size() int {
+	return m.Size()
+}
+func (m *SyncSelector) XXX_DiscardUnknown() {
+	xxx_messageInfo_SyncSelector.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SyncSelector proto.InternalMessageInfo
+
 func (m *Synchronization) Reset()      { *m = Synchronization{} }
 func (*Synchronization) ProtoMessage() {}
 func (*Synchronization) Descriptor() ([]byte, []int) {
@@ -4244,6 +4300,7 @@ func init() {
 	proto.RegisterMapType((map[string]bool)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.ArtGCStatus.PodsRecoupedEntry")
 	proto.RegisterMapType((map[ArtifactGCStrategy]bool)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.ArtGCStatus.StrategiesProcessedEntry")
 	proto.RegisterType((*Artifact)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.Artifact")
+	proto.RegisterType((*ArtifactByManifestRequest)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.ArtifactByManifestRequest")
 	proto.RegisterType((*ArtifactGC)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.ArtifactGC")
 	proto.RegisterType((*ArtifactGCSpec)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.ArtifactGCSpec")
 	proto.RegisterMapType((map[string]ArtifactNodeSpec)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.ArtifactGCSpec.ArtifactsByNodeEntry")
@@ -4366,6 +4423,7 @@ func init() {
 	proto.RegisterType((*SubmitOpts)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.SubmitOpts")
 	proto.RegisterType((*SuppliedValueFrom)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.SuppliedValueFrom")
 	proto.RegisterType((*SuspendTemplate)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.SuspendTemplate")
+	proto.RegisterType((*SyncSelector)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.SyncSelector")
 	proto.RegisterType((*Synchronization)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.Synchronization")
 	proto.RegisterType((*SynchronizationStatus)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.SynchronizationStatus")
 	proto.RegisterType((*TTLStrategy)(nil), "github.com.argoproj.argo_workflows.v3.pkg.apis.workflow.v1alpha1.TTLStrategy")
@@ -5441,6 +5499,41 @@ func (m *Artifact) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintGenerated(dAtA, i, uint64(len(m.Name)))
 	i--
 	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *ArtifactByManifestRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ArtifactByManifestRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ArtifactByManifestRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Workflow != nil {
+		{
+			size, err := m.Workflow.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintGenerated(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -11205,6 +11298,39 @@ func (m *SuspendTemplate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *SyncSelector) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SyncSelector) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SyncSelector) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	i -= len(m.Template)
+	copy(dAtA[i:], m.Template)
+	i = encodeVarintGenerated(dAtA, i, uint64(len(m.Template)))
+	i--
+	dAtA[i] = 0x12
+	i -= len(m.Name)
+	copy(dAtA[i:], m.Name)
+	i = encodeVarintGenerated(dAtA, i, uint64(len(m.Name)))
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func (m *Synchronization) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -14159,6 +14285,19 @@ func (m *Artifact) Size() (n int) {
 	return n
 }
 
+func (m *ArtifactByManifestRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Workflow != nil {
+		l = m.Workflow.Size()
+		n += 1 + l + sovGenerated(uint64(l))
+	}
+	return n
+}
+
 func (m *ArtifactGC) Size() (n int) {
 	if m == nil {
 		return 0
@@ -16267,6 +16406,19 @@ func (m *SuspendTemplate) Size() (n int) {
 	return n
 }
 
+func (m *SyncSelector) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Name)
+	n += 1 + l + sovGenerated(uint64(l))
+	l = len(m.Template)
+	n += 1 + l + sovGenerated(uint64(l))
+	return n
+}
+
 func (m *Synchronization) Size() (n int) {
 	if m == nil {
 		return 0
@@ -17322,6 +17474,16 @@ func (this *Artifact) String() string {
 	}, "")
 	return s
 }
+func (this *ArtifactByManifestRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&ArtifactByManifestRequest{`,
+		`Workflow:` + strings.Replace(this.Workflow.String(), "Workflow", "Workflow", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
 func (this *ArtifactGC) String() string {
 	if this == nil {
 		return "nil"
@@ -18323,6 +18485,11 @@ func (this *Mutex) String() string {
 	if this == nil {
 		return "nil"
 	}
+	repeatedStringForSelectors := "[]SyncSelector{"
+	for _, f := range this.Selectors {
+		repeatedStringForSelectors += strings.Replace(strings.Replace(f.String(), "SyncSelector", "SyncSelector", 1), `&`, ``, 1) + ","
+	}
+	repeatedStringForSelectors += "}"
 	s := strings.Join([]string{`&Mutex{`,
 		`Name:` + fmt.Sprintf("%v", this.Name) + `,`,
 		`Namespace:` + fmt.Sprintf("%v", this.Namespace) + `,`,
@@ -18778,6 +18945,11 @@ func (this *SemaphoreRef) String() string {
 	if this == nil {
 		return "nil"
 	}
+	repeatedStringForSelectors := "[]SyncSelector{"
+	for _, f := range this.Selectors {
+		repeatedStringForSelectors += strings.Replace(strings.Replace(f.String(), "SyncSelector", "SyncSelector", 1), `&`, ``, 1) + ","
+	}
+	repeatedStringForSelectors += "}"
 	s := strings.Join([]string{`&SemaphoreRef{`,
 		`ConfigMapKeyRef:` + strings.Replace(fmt.Sprintf("%v", this.ConfigMapKeyRef), "ConfigMapKeySelector", "v1.ConfigMapKeySelector", 1) + `,`,
 		`Namespace:` + fmt.Sprintf("%v", this.Namespace) + `,`,
@@ -18867,6 +19039,17 @@ func (this *SuspendTemplate) String() string {
 	}
 	s := strings.Join([]string{`&SuspendTemplate{`,
 		`Duration:` + fmt.Sprintf("%v", this.Duration) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *SyncSelector) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&SyncSelector{`,
+		`Name:` + fmt.Sprintf("%v", this.Name) + `,`,
+		`Template:` + fmt.Sprintf("%v", this.Template) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -20658,6 +20841,92 @@ func (m *Artifact) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Deleted = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGenerated(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGenerated
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ArtifactByManifestRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGenerated
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ArtifactByManifestRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ArtifactByManifestRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Workflow", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenerated
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenerated
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenerated
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Workflow == nil {
+				m.Workflow = &Workflow{}
+			}
+			if err := m.Workflow.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenerated(dAtA[iNdEx:])
@@ -38516,6 +38785,120 @@ func (m *SuspendTemplate) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Duration = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGenerated(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGenerated
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SyncSelector) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGenerated
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SyncSelector: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SyncSelector: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenerated
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenerated
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenerated
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Template", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenerated
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenerated
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenerated
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Template = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
