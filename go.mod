@@ -12,14 +12,14 @@ require (
 	github.com/alibabacloud-go/tea v1.2.1
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.1+incompatible
 	github.com/aliyun/credentials-go v1.3.2
-	github.com/antonmedv/expr v1.15.5
 	github.com/argoproj/argo-events v1.7.3
 	github.com/argoproj/pkg v0.13.7-0.20230901113346-235a5432ec98
 	github.com/blushft/go-diagrams v0.0.0-20201006005127-c78c821223d9
 	github.com/colinmarc/hdfs/v2 v2.4.0
 	github.com/coreos/go-oidc/v3 v3.7.0
 	github.com/doublerebel/bellows v0.0.0-20160303004610-f177d92a03d3
-	github.com/evanphx/json-patch v5.7.0+incompatible
+	github.com/evanphx/json-patch v5.8.0+incompatible
+	github.com/expr-lang/expr v1.16.0
 	github.com/gavv/httpexpect/v2 v2.10.0
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/go-jose/go-jose/v3 v3.0.1
@@ -55,7 +55,7 @@ require (
 	github.com/upper/db/v4 v4.7.0
 	github.com/valyala/fasttemplate v1.2.2
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/oauth2 v0.13.0
 	golang.org/x/sync v0.5.0
@@ -79,7 +79,7 @@ require (
 require (
 	dario.cat/mergo v1.0.0 // indirect
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
-	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.14.3 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/evilmonkeyinc/jsonpath v0.8.1 // indirect
@@ -162,7 +162,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/daviddengcn/go-colortext v0.0.0-20160507010035-511bcaf42ccd // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
-	github.com/docker/cli v24.0.0+incompatible // indirect
+	github.com/docker/cli v24.0.7+incompatible // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/docker v24.0.0+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
