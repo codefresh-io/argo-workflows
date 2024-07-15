@@ -17,11 +17,11 @@ import (
 
 	"github.com/argoproj/argo-workflows/v3/util/secrets"
 
-	"github.com/antonmedv/expr"
 	"github.com/argoproj/pkg/humanize"
 	argokubeerr "github.com/argoproj/pkg/kube/errors"
 	"github.com/argoproj/pkg/strftime"
 	jsonpatch "github.com/evanphx/json-patch"
+	"github.com/expr-lang/expr"
 	log "github.com/sirupsen/logrus"
 	apiv1 "k8s.io/api/core/v1"
 	policyv1 "k8s.io/api/policy/v1"
@@ -307,7 +307,7 @@ func (woc *wfOperationCtx) operate(ctx context.Context) {
 		woc.wf.Status.EstimatedDuration = woc.estimateWorkflowDuration()
 	} else {
 		woc.workflowDeadline = woc.getWorkflowDeadline()
-		err = woc.podReconciliation(ctx)
+		err, podReconciliationCompleted := woc.podReconciliation(ctx)
 		if err == nil {
 			woc.failSuspendedAndPendingNodesAfterDeadlineOrShutdown()
 		}
@@ -316,6 +316,12 @@ func (woc *wfOperationCtx) operate(ctx context.Context) {
 			woc.log.WithError(err).WithField("workflow", woc.wf.ObjectMeta.Name).Error("workflow timeout")
 			woc.eventRecorder.Event(woc.wf, apiv1.EventTypeWarning, "WorkflowTimedOut", "Workflow timed out")
 			// TODO: we need to re-add to the workqueue, but should happen in caller
+			return
+		}
+
+		if !podReconciliationCompleted {
+			woc.log.WithField("workflow", woc.wf.ObjectMeta.Name).Info("pod reconciliation didn't complete, will retry")
+			woc.requeue()
 			return
 		}
 	}
@@ -556,7 +562,11 @@ func (woc *wfOperationCtx) updateWorkflowMetadata() error {
 
 		env := env.GetFuncMap(template.EnvMap(woc.globalParams))
 		for n, f := range md.LabelsFrom {
-			r, err := expr.Eval(f.Expression, env)
+			program, err := expr.Compile(f.Expression, expr.Env(env))
+			if err != nil {
+				return fmt.Errorf("Failed to compile function for expression %q: %w", f.Expression, err)
+			}
+			r, err := expr.Run(program, env)
 			if err != nil {
 				return fmt.Errorf("failed to evaluate label %q expression %q: %w", n, f.Expression, err)
 			}
@@ -948,7 +958,7 @@ func (woc *wfOperationCtx) processNodeRetries(node *wfv1.NodeStatus, retryStrate
 		if err != nil {
 			return nil, false, err
 		}
-		if !shouldContinue {
+		if !shouldContinue && lastChildNode.Fulfilled() {
 			return woc.markNodePhase(node.Name, lastChildNode.Phase, "retryStrategy.expression evaluated to false"), true, nil
 		}
 	}
@@ -1088,15 +1098,17 @@ func (woc *wfOperationCtx) processNodeRetries(node *wfv1.NodeStatus, retryStrate
 // pods and update the node state before continuing the evaluation of the workflow.
 // Records all pods which were observed completed, which will be labeled completed=true
 // after successful persist of the workflow.
-func (woc *wfOperationCtx) podReconciliation(ctx context.Context) error {
+// returns whether pod reconciliation successfully completed
+func (woc *wfOperationCtx) podReconciliation(ctx context.Context) (error, bool) {
 	podList, err := woc.getAllWorkflowPods()
 	if err != nil {
-		return err
+		return err, false
 	}
 	seenPods := make(map[string]*apiv1.Pod)
 	seenPodLock := &sync.Mutex{}
 	wfNodesLock := &sync.RWMutex{}
 	podRunningCondition := wfv1.Condition{Type: wfv1.ConditionTypePodRunning, Status: metav1.ConditionFalse}
+	taskResultIncomplete := false
 	performAssessment := func(pod *apiv1.Pod) {
 		if pod == nil {
 			return
@@ -1115,6 +1127,12 @@ func (woc *wfOperationCtx) podReconciliation(ctx context.Context) error {
 		node, err := woc.wf.Status.Nodes.Get(nodeID)
 		if err == nil {
 			if newState := woc.assessNodeStatus(pod, node); newState != nil {
+				// Check whether its taskresult is in an incompleted state.
+				if newState.Succeeded() && woc.wf.Status.IsTaskResultIncomplete(node.ID) {
+					woc.log.WithFields(log.Fields{"nodeID": newState.ID}).Debug("Taskresult of the node not yet completed")
+					taskResultIncomplete = true
+					return
+				}
 				woc.addOutputsToGlobalScope(newState.Outputs)
 				if newState.MemoizationStatus != nil {
 					if newState.Succeeded() {
@@ -1158,6 +1176,12 @@ func (woc *wfOperationCtx) podReconciliation(ctx context.Context) error {
 
 	wg.Wait()
 
+	// If true, it means there are some nodes which have outputs we wanted to be marked succeed, but the node's taskresults didn't completed.
+	// We should make sure the taskresults processing is complete as it will be possible to reference it in the next step.
+	if taskResultIncomplete {
+		return nil, false
+	}
+
 	woc.wf.Status.Conditions.UpsertCondition(podRunningCondition)
 
 	// Now check for deleted pods. Iterate our nodes. If any one of our nodes does not show up in
@@ -1197,7 +1221,7 @@ func (woc *wfOperationCtx) podReconciliation(ctx context.Context) error {
 			woc.markNodePhase(node.Name, wfv1.NodeError, "pod deleted")
 		}
 	}
-	return nil
+	return nil, !taskResultIncomplete
 }
 
 func (woc *wfOperationCtx) nodeID(pod *apiv1.Pod) string {
@@ -1732,6 +1756,14 @@ func (woc *wfOperationCtx) deletePVCs(ctx context.Context) error {
 	return firstErr
 }
 
+// Check if we have a retry node which wasn't memoized and return that if we do
+func (woc *wfOperationCtx) possiblyGetRetryChildNode(node *wfv1.NodeStatus) *wfv1.NodeStatus {
+	if node.Type == wfv1.NodeTypeRetry && !(node.MemoizationStatus != nil && node.MemoizationStatus.Hit) {
+		return getChildNodeIndex(node, woc.wf.Status.Nodes, -1)
+	}
+	return nil
+}
+
 func getChildNodeIndex(node *wfv1.NodeStatus, nodes wfv1.Nodes, index int) *wfv1.NodeStatus {
 	if len(node.Children) <= 0 {
 		return nil
@@ -2092,7 +2124,7 @@ func (woc *wfOperationCtx) executeTemplate(ctx context.Context, nodeName string,
 		// Inject the retryAttempt number
 		localParams[common.LocalVarRetries] = strconv.Itoa(retryNum)
 
-		processedTmpl, err = common.SubstituteParams(processedTmpl, map[string]string{}, localParams)
+		processedTmpl, err = common.SubstituteParams(processedTmpl, woc.globalParams, localParams)
 		if errorsutil.IsTransientErr(err) {
 			return node, err
 		}
@@ -2403,6 +2435,16 @@ func (woc *wfOperationCtx) initializeExecutableNode(nodeName string, nodeType wf
 	// Set the input values to the node.
 	if executeTmpl.Inputs.HasInputs() {
 		node.Inputs = executeTmpl.Inputs.DeepCopy()
+	}
+
+	// Set the MemoizationStatus
+	if node.MemoizationStatus == nil && executeTmpl.Memoize != nil {
+		memoizationStatus := &wfv1.MemoizationStatus{
+			Hit:       false,
+			Key:       executeTmpl.Memoize.Key,
+			CacheName: executeTmpl.Memoize.Cache.ConfigMap.Name,
+		}
+		node.MemoizationStatus = memoizationStatus
 	}
 
 	if nodeType == wfv1.NodeTypeSuspend {
@@ -2974,8 +3016,8 @@ func (woc *wfOperationCtx) requeueIfTransientErr(err error, nodeName string) (*w
 func (woc *wfOperationCtx) buildLocalScope(scope *wfScope, prefix string, node *wfv1.NodeStatus) {
 	// It may be that the node is a retry node, in which case we want to get the outputs of the last node
 	// in the retry group instead of the retry node itself.
-	if node.Type == wfv1.NodeTypeRetry {
-		node = getChildNodeIndex(node, woc.wf.Status.Nodes, -1)
+	if lastChildNode := woc.possiblyGetRetryChildNode(node); lastChildNode != nil {
+		node = lastChildNode
 	}
 
 	if node.ID != "" {

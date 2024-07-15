@@ -326,8 +326,8 @@ func TestTmplLevelExecutorServiceAccountName(t *testing.T) {
 	verifyServiceAccountTokenVolumeMount(t, waitCtr, "exec-sa-token", "/var/run/secrets/kubernetes.io/serviceaccount")
 }
 
-// TestTmplLevelExecutorServiceAccountName verifies the ability to carry forward template level AutomountServiceAccountToken to Podspec.
-func TestTmplLevelExecutorSecurityContext(t *testing.T) {
+// TestCtrlLevelExecutorSecurityContext verifies the ability to carry forward Controller level SecurityContext to Podspec.
+func TestCtrlLevelExecutorSecurityContext(t *testing.T) {
 	var user int64 = 1000
 	ctx := context.Background()
 	woc := newWoc()
@@ -1490,6 +1490,26 @@ func TestMainContainerCustomization(t *testing.T) {
 	})
 }
 
+func TestExecutorContainerCustomization(t *testing.T) {
+	woc := newWoc()
+	woc.controller.Config.Executor = &apiv1.Container{
+		Args: []string{"foo"},
+		Resources: apiv1.ResourceRequirements{
+			Limits: apiv1.ResourceList{
+				apiv1.ResourceCPU:    resource.MustParse("0.900"),
+				apiv1.ResourceMemory: resource.MustParse("512Mi"),
+			},
+		},
+	}
+
+	pod, err := woc.createWorkflowPod(context.Background(), "", nil, &wfv1.Template{}, &createWorkflowPodOpts{})
+	assert.NoError(t, err)
+	waitCtr := pod.Spec.Containers[0]
+	assert.Equal(t, []string{"foo"}, waitCtr.Args)
+	assert.Equal(t, "0.900", waitCtr.Resources.Limits.Cpu().AsDec().String())
+	assert.Equal(t, "536870912", waitCtr.Resources.Limits.Memory().AsDec().String())
+}
+
 var helloWindowsWf = `
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
@@ -1881,6 +1901,91 @@ func TestProgressEnvVars(t *testing.T) {
 		assert.Contains(t, pod.Spec.Containers[0].Env, apiv1.EnvVar{
 			Name:  common.EnvVarProgressFileTickDuration,
 			Value: "1s",
+		})
+	})
+}
+
+var helloWorldWfWithEnvReferSecret = `
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: hello-world
+spec:
+  entrypoint: whalesay
+  templates:
+  - name: whalesay
+    metadata:
+      annotations:
+        annotationKey1: "annotationValue1"
+        annotationKey2: "annotationValue2"
+      labels:
+        labelKey1: "labelValue1"
+        labelKey2: "labelValue2"
+    container:
+      image: docker/whalesay:latest
+      command: [cowsay]
+      args: ["hello world"]
+      env:
+      - name: ENV3
+        valueFrom:
+          secretKeyRef:
+            name: mysecret
+            key: sec
+`
+
+func TestMergeEnvVars(t *testing.T) {
+	setup := func(t *testing.T, options ...interface{}) (context.CancelFunc, *apiv1.Pod) {
+		cancel, controller := newController(options...)
+
+		wf := wfv1.MustUnmarshalWorkflow(helloWorldWfWithEnvReferSecret)
+		ctx := context.Background()
+		woc := newWorkflowOperationCtx(wf, controller)
+		err := woc.setExecWorkflow(ctx)
+		require.NoError(t, err)
+		mainCtrSpec := &apiv1.Container{
+			Name:            common.MainContainerName,
+			SecurityContext: &apiv1.SecurityContext{},
+			Env: []apiv1.EnvVar{
+				{
+					Name:  "ENV1",
+					Value: "env1",
+				},
+				{
+					Name:  "ENV2",
+					Value: "env2",
+				},
+			},
+		}
+		woc.controller.Config.MainContainer = mainCtrSpec
+		mainCtr := woc.execWf.Spec.Templates[0].Container
+
+		pod, err := woc.createWorkflowPod(ctx, wf.Name, []apiv1.Container{*mainCtr}, &wf.Spec.Templates[0], &createWorkflowPodOpts{})
+		require.NoError(t, err)
+		assert.NotNil(t, pod)
+		return cancel, pod
+	}
+
+	t.Run("test merge envs", func(t *testing.T) {
+		cancel, pod := setup(t)
+		defer cancel()
+		assert.Contains(t, pod.Spec.Containers[1].Env, apiv1.EnvVar{
+			Name:  "ENV1",
+			Value: "env1",
+		})
+		assert.Contains(t, pod.Spec.Containers[1].Env, apiv1.EnvVar{
+			Name:  "ENV2",
+			Value: "env2",
+		})
+		assert.Contains(t, pod.Spec.Containers[1].Env, apiv1.EnvVar{
+			Name: "ENV3",
+			ValueFrom: &apiv1.EnvVarSource{
+				SecretKeyRef: &apiv1.SecretKeySelector{
+					LocalObjectReference: apiv1.LocalObjectReference{
+						Name: "mysecret",
+					},
+					Key: "sec",
+				},
+			},
 		})
 	})
 }

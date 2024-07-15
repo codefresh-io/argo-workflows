@@ -876,6 +876,86 @@ func TestProcessNodeRetriesWithExponentialBackoff(t *testing.T) {
 	require.Equal(wfv1.NodeSucceeded, n.Phase)
 }
 
+// TestProcessNodeRetries tests retrying with Expression
+func TestProcessNodeRetriesWithExpression(t *testing.T) {
+	cancel, controller := newController()
+	defer cancel()
+	assert.NotNil(t, controller)
+	wf := wfv1.MustUnmarshalWorkflow(helloWorldWf)
+	assert.NotNil(t, wf)
+	woc := newWorkflowOperationCtx(wf, controller)
+	assert.NotNil(t, woc)
+	// Verify that there are no nodes in the wf status.
+	assert.Zero(t, len(woc.wf.Status.Nodes))
+
+	// Add the parent node for retries.
+	nodeName := "test-node"
+	nodeID := woc.wf.NodeID(nodeName)
+	node := woc.initializeNode(nodeName, wfv1.NodeTypeRetry, "", &wfv1.WorkflowStep{}, "", wfv1.NodeRunning, &wfv1.NodeFlag{})
+	retries := wfv1.RetryStrategy{}
+	retries.Expression = "false"
+	retries.Limit = intstrutil.ParsePtr("2")
+	retries.RetryPolicy = wfv1.RetryPolicyAlways
+	woc.wf.Status.Nodes[nodeID] = *node
+
+	assert.Equal(t, node.Phase, wfv1.NodeRunning)
+
+	// Ensure there are no child nodes yet.
+	lastChild := getChildNodeIndex(node, woc.wf.Status.Nodes, -1)
+	assert.Nil(t, lastChild)
+
+	// Add child nodes.
+	for i := 0; i < 2; i++ {
+		childNode := fmt.Sprintf("%s(%d)", nodeName, i)
+		woc.initializeNode(childNode, wfv1.NodeTypePod, "", &wfv1.WorkflowStep{}, "", wfv1.NodeRunning, &wfv1.NodeFlag{Retried: true})
+		woc.addChildNode(nodeName, childNode)
+	}
+
+	n, err := woc.wf.GetNodeByName(nodeName)
+	assert.NoError(t, err)
+	lastChild = getChildNodeIndex(n, woc.wf.Status.Nodes, -1)
+	assert.NotNil(t, lastChild)
+
+	// Last child is still running. processNodeRetries() should return false since
+	// there should be no retries at this point.
+	n, _, err = woc.processNodeRetries(n, retries, &executeTemplateOpts{})
+	assert.NoError(t, err)
+	assert.Equal(t, n.Phase, wfv1.NodeRunning)
+
+	// Mark lastChild Pending.
+	woc.markNodePhase(lastChild.Name, wfv1.NodePending)
+	n, _, err = woc.processNodeRetries(n, retries, &executeTemplateOpts{})
+	assert.Nil(t, err)
+	assert.Equal(t, n.Phase, wfv1.NodeRunning)
+
+	// Mark lastChild as successful.
+	woc.markNodePhase(lastChild.Name, wfv1.NodeSucceeded)
+	n, _, err = woc.processNodeRetries(n, retries, &executeTemplateOpts{})
+	assert.Nil(t, err)
+	// The parent node also gets marked as Succeeded.
+	assert.Equal(t, n.Phase, wfv1.NodeSucceeded)
+
+	// Mark the parent node as running again and the lastChild as errored.
+	n = woc.markNodePhase(n.Name, wfv1.NodeRunning)
+	woc.markNodePhase(lastChild.Name, wfv1.NodeError)
+	_, _, err = woc.processNodeRetries(n, retries, &executeTemplateOpts{})
+	assert.NoError(t, err)
+	n, err = woc.wf.GetNodeByName(nodeName)
+	assert.NoError(t, err)
+	assert.Equal(t, n.Phase, wfv1.NodeError)
+
+	// Add a third node that has failed.
+	woc.markNodePhase(n.Name, wfv1.NodeRunning)
+	childNode := fmt.Sprintf("%s(%d)", nodeName, 3)
+	woc.initializeNode(childNode, wfv1.NodeTypePod, "", &wfv1.WorkflowStep{}, "", wfv1.NodeFailed, &wfv1.NodeFlag{Retried: true})
+	woc.addChildNode(nodeName, childNode)
+	n, err = woc.wf.GetNodeByName(nodeName)
+	assert.NoError(t, err)
+	n, _, err = woc.processNodeRetries(n, retries, &executeTemplateOpts{})
+	assert.NoError(t, err)
+	assert.Equal(t, n.Phase, wfv1.NodeFailed)
+}
+
 func parseRetryMessage(message string) (int, error) {
 	pattern := regexp.MustCompile(`Backoff for (\d+) minutes (\d+) seconds`)
 	matches := pattern.FindStringSubmatch(message)
@@ -1238,6 +1318,63 @@ func TestRetriesVariableInPodSpecPatch(t *testing.T) {
 		expected = append(expected, fmt.Sprintf("%dMi", (i+1)*64))
 	}
 	// expecting memory limit to increase after each retry: "64Mi", "128Mi", "192Mi", "256Mi", "320Mi"
+	// ordering not preserved
+	assert.ElementsMatch(t, actual, expected)
+}
+
+var retriesVariableWithGlobalVariablesInPodSpecPatchTemplate = `
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: whalesay
+spec:
+  entrypoint: whalesay
+  arguments:
+    parameters:
+      - name: memreqnum
+        value: 100
+  templates:
+  - name: whalesay
+    retryStrategy:
+      limit: 10
+    podSpecPatch: |
+      containers:
+        - name: main
+          resources:
+            limits:
+              memory: "{{= (sprig.int(retries)+1)* sprig.int(workflow.parameters.memreqnum)}}Mi"
+    container:
+      image: docker/whalesay:latest
+      command: [sh, -c]
+      args: ["cowsay hello"]
+`
+
+func TestRetriesVariableWithGlobalVariableInPodSpecPatch(t *testing.T) {
+	wf := wfv1.MustUnmarshalWorkflow(retriesVariableWithGlobalVariablesInPodSpecPatchTemplate)
+	cancel, controller := newController(wf)
+	defer cancel()
+	ctx := context.Background()
+	iterations := 5
+	var woc *wfOperationCtx
+	for i := 1; i <= iterations; i++ {
+		woc = newWorkflowOperationCtx(wf, controller)
+		if i != 1 {
+			makePodsPhase(ctx, woc, apiv1.PodFailed)
+		}
+		woc.operate(ctx)
+		wf = woc.wf
+	}
+
+	pods, err := listPods(woc)
+	assert.NoError(t, err)
+	assert.Len(t, pods.Items, iterations)
+	expected := []string{}
+	actual := []string{}
+	for i := 0; i < iterations; i++ {
+		actual = append(actual, pods.Items[i].Spec.Containers[1].Resources.Limits.Memory().String())
+		expected = append(expected, fmt.Sprintf("%dMi", (i+1)*100))
+	}
+	// expecting memory limit to increase after each retry: "100Mi", "200Mi", "300Mi", "400Mi", "500Mi"
 	// ordering not preserved
 	assert.ElementsMatch(t, actual, expected)
 }
@@ -1689,6 +1826,8 @@ func TestWorkflowStepRetry(t *testing.T) {
 	wf, err = wfcset.Get(ctx, wf.ObjectMeta.Name, metav1.GetOptions{})
 	assert.Nil(t, err)
 	woc = newWorkflowOperationCtx(wf, controller)
+	nodeID := woc.nodeID(&pods.Items[0])
+	woc.wf.Status.MarkTaskResultComplete(nodeID)
 	woc.operate(ctx)
 
 	// fail the second pod
@@ -4451,7 +4590,7 @@ func TestUnsuppliedArgValue(t *testing.T) {
 	woc := newWorkflowOperationCtx(wf, controller)
 	woc.operate(ctx)
 	assert.Equal(t, woc.wf.Status.Conditions[0].Status, metav1.ConditionStatus("True"))
-	assert.Equal(t, woc.wf.Status.Message, "invalid spec: spec.arguments.missing.value is required")
+	assert.Equal(t, woc.wf.Status.Message, "invalid spec: spec.arguments.missing.value or spec.arguments.missing.valueFrom is required")
 }
 
 var suppliedArgValue = `
@@ -5337,6 +5476,215 @@ func TestConfigMapCacheLoadOperateMaxAge(t *testing.T) {
 			assert.Equal(t, wfv1.NodePending, node.Phase)
 		}
 	}
+}
+
+var workflowStepCachedWithRetryStrategy = `
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: memoized-workflow-test
+spec:
+  entrypoint: whalesay
+  arguments:
+    parameters:
+    - name: message
+      value: hi-there-world
+  templates:
+  - name: whalesay
+    inputs:
+      parameters:
+      - name: message
+    retryStrategy:
+      limit: "10"
+    memoize:
+      key: "{{inputs.parameters.message}}"
+      cache:
+        configMap:
+          name: whalesay-cache
+    container:
+      image: docker/whalesay:latest
+      command: [sh, -c]
+      args: ["sleep 10; cowsay {{inputs.parameters.message}} > /tmp/hello_world.txt"]
+    outputs:
+      parameters:
+      - name: hello
+        valueFrom:
+          path: /tmp/hello_world.txt
+`
+
+var workflowDagCachedWithRetryStrategy = `
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: memoized-workflow-test
+spec:
+  entrypoint: main
+#  podGC:
+#    strategy: OnPodCompletion
+  templates:
+  - name: main
+    dag:
+      tasks:
+      - name: regular-1
+        template: run
+        arguments:
+          parameters:
+          - name: id
+            value: 1
+          - name: cache-key
+            value: '{{workflow.name}}'
+      - name: regular-2
+        template: run
+        depends: regular-1.Succeeded
+        arguments:
+          parameters:
+          - name: id
+            value: 2
+          - name: cache-key
+            value: '{{workflow.name}}'
+      - name: with-retries-1
+        template: run-with-retries
+        arguments:
+          parameters:
+          - name: id
+            value: 3
+          - name: cache-key
+            value: '{{workflow.name}}'
+      - name: with-retries-2
+        template: run-with-retries
+        depends: with-retries-1.Succeeded
+        arguments:
+          parameters:
+          - name: id
+            value: 4
+          - name: cache-key
+            value: '{{workflow.name}}'
+      - name: with-dag-1
+        template: run-with-dag
+        arguments:
+          parameters:
+          - name: id
+            value: 5
+          - name: cache-key
+            value: '{{workflow.name}}'
+      - name: with-dag-2
+        template: run-with-dag
+        depends: with-dag-1.Succeeded
+        arguments:
+          parameters:
+          - name: id
+            value: 6
+          - name: cache-key
+            value: '{{workflow.name}}'
+
+  - name: run
+    inputs:
+      parameters:
+      - name: id
+      - name: cache-key
+    script:
+      image: ubuntu:22.04
+      command: [bash]
+      source: |
+        sleep 30
+        echo result: {{inputs.parameters.id}}
+    memoize:
+      key: "regular-{{inputs.parameters.cache-key}}"
+      cache:
+        configMap:
+          name: memoization-test-cache
+
+  - name: run-with-retries
+    inputs:
+      parameters:
+      - name: id
+      - name: cache-key
+    script:
+      image: ubuntu:22.04
+      command: [bash]
+      source: |
+        sleep 30
+        echo result: {{inputs.parameters.id}}
+    memoize:
+      key: "retry-{{inputs.parameters.cache-key}}"
+      cache:
+        configMap:
+          name: memoization-test-cache
+    retryStrategy:
+      limit: '1'
+      retryPolicy: Always
+
+  - name: run-raw
+    inputs:
+      parameters:
+      - name: id
+      - name: cache-key
+    script:
+      image: ubuntu:22.04
+      command: [bash]
+      source: |
+        sleep 30
+        echo result: {{inputs.parameters.id}}
+
+  - name: run-with-dag
+    inputs:
+      parameters:
+      - name: id
+      - name: cache-key
+    dag:
+      tasks:
+      - name: run-raw-step
+        template: run-raw
+        arguments:
+          parameters:
+          - name: id
+            value: '{{inputs.parameters.id}}'
+          - name: cache-key
+            value: '{{inputs.parameters.cache-key}}'
+    memoize:
+      key: "dag-{{inputs.parameters.cache-key}}"
+      cache:
+        configMap:
+          name: memoization-test-cache`
+
+func TestStepConfigMapCacheCreateWhenHaveRetryStrategy(t *testing.T) {
+	wf := wfv1.MustUnmarshalWorkflow(workflowStepCachedWithRetryStrategy)
+	cancel, controller := newController()
+	defer cancel()
+
+	ctx := context.Background()
+	_, err := controller.wfclientset.ArgoprojV1alpha1().Workflows(wf.ObjectMeta.Namespace).Create(ctx, wf, metav1.CreateOptions{})
+	assert.NoError(t, err)
+
+	woc := newWorkflowOperationCtx(wf, controller)
+	woc.operate(ctx)
+	makePodsPhase(ctx, woc, apiv1.PodSucceeded)
+	woc.operate(ctx)
+	cm, err := controller.kubeclientset.CoreV1().ConfigMaps("default").Get(ctx, "whalesay-cache", metav1.GetOptions{})
+	assert.NoError(t, err)
+	assert.Contains(t, cm.Labels, common.LabelKeyConfigMapType)
+	assert.Equal(t, common.LabelValueTypeConfigMapCache, cm.Labels[common.LabelKeyConfigMapType])
+	assert.Equal(t, wfv1.WorkflowSucceeded, woc.wf.Status.Phase)
+}
+
+func TestDAGConfigMapCacheCreateWhenHaveRetryStrategy(t *testing.T) {
+	wf := wfv1.MustUnmarshalWorkflow(workflowDagCachedWithRetryStrategy)
+	cancel, controller := newController()
+	defer cancel()
+
+	ctx := context.Background()
+	_, err := controller.wfclientset.ArgoprojV1alpha1().Workflows(wf.ObjectMeta.Namespace).Create(ctx, wf, metav1.CreateOptions{})
+	assert.NoError(t, err)
+
+	woc := newWorkflowOperationCtx(wf, controller)
+	woc.operate(ctx)
+	makePodsPhase(ctx, woc, apiv1.PodSucceeded)
+	woc.operate(ctx)
+	cm, err := controller.kubeclientset.CoreV1().ConfigMaps("default").Get(ctx, "memoization-test-cache", metav1.GetOptions{})
+	assert.NoError(t, err)
+	assert.Contains(t, cm.Labels, common.LabelKeyConfigMapType)
+	assert.Equal(t, common.LabelValueTypeConfigMapCache, cm.Labels[common.LabelKeyConfigMapType])
+	assert.Equal(t, wfv1.WorkflowSucceeded, woc.wf.Status.Phase)
 }
 
 func TestConfigMapCacheLoadNoLabels(t *testing.T) {
@@ -9872,4 +10220,118 @@ status:
 	woc := newWorkflowOperationCtx(wf, controller)
 
 	woc.operate(ctx)
+}
+
+var needReconcileWorklfow = `
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: steps-need-reconcile
+spec:
+  entrypoint: hello-hello-hello
+  arguments:
+    parameters:
+    - name: message1
+      value: hello world
+    - name: message2
+      value: foobar
+  # This spec contains two templates: hello-hello-hello and whalesay
+  templates:
+  - name: hello-hello-hello
+    # Instead of just running a container
+    # This template has a sequence of steps
+    steps:
+    - - name: hello1            # hello1 is run before the following steps
+        continueOn: {}
+        template: whalesay
+        arguments:
+          parameters:
+          - name: message
+            value: "hello1"
+          - name: workflow_artifact_key
+            value: "{{ workflow.parameters.message2}}"
+    - - name: hello2a           # double dash => run after previous step
+        template: whalesay
+        arguments:
+          parameters:
+          - name: message
+            value: "{{=steps['hello1'].outputs.parameters['workflow_artifact_key']}}"
+
+  # This is the same template as from the previous example
+  - name: whalesay
+    inputs:
+      parameters:
+      - name: message
+    outputs:
+      parameters:
+      - name: workflow_artifact_key
+        value: '{{workflow.name}}'
+    script:
+      image: python:alpine3.6
+      command: [python]
+      env:  
+      - name: message
+        value: "{{inputs.parameters.message}}"
+      source: |
+        import random
+        i = random.randint(1, 100)
+        print(i)`
+
+// TestWorkflowNeedReconcile test whether a workflow need reconcile taskresults.
+func TestWorkflowNeedReconcile(t *testing.T) {
+	cancel, controller := newController()
+	defer cancel()
+	ctx := context.Background()
+	wfcset := controller.wfclientset.ArgoprojV1alpha1().Workflows("")
+	wf := wfv1.MustUnmarshalWorkflow(needReconcileWorklfow)
+	wf, err := wfcset.Create(ctx, wf, metav1.CreateOptions{})
+	assert.Nil(t, err)
+	wf, err = wfcset.Get(ctx, wf.ObjectMeta.Name, metav1.GetOptions{})
+	assert.Nil(t, err)
+	woc := newWorkflowOperationCtx(wf, controller)
+	woc.operate(ctx)
+	pods, err := listPods(woc)
+	assert.Nil(t, err)
+	assert.Equal(t, 1, len(pods.Items))
+
+	// complete the first pod
+	makePodsPhase(ctx, woc, apiv1.PodSucceeded)
+	wf, err = wfcset.Get(ctx, wf.ObjectMeta.Name, metav1.GetOptions{})
+	assert.Nil(t, err)
+	woc = newWorkflowOperationCtx(wf, controller)
+	err, podReconciliationCompleted := woc.podReconciliation(ctx)
+	assert.Nil(t, err)
+	assert.False(t, podReconciliationCompleted)
+
+	for idx, node := range woc.wf.Status.Nodes {
+		if strings.Contains(node.Name, ".hello1") {
+			node.Outputs = &wfv1.Outputs{
+				Parameters: []wfv1.Parameter{
+					{
+						Name:  "workflow_artifact_key",
+						Value: wfv1.AnyStringPtr("steps-need-reconcile"),
+					},
+				},
+			}
+			woc.wf.Status.Nodes[idx] = node
+			woc.wf.Status.MarkTaskResultComplete(node.ID)
+		}
+	}
+	err, podReconciliationCompleted = woc.podReconciliation(ctx)
+	assert.Nil(t, err)
+	assert.True(t, podReconciliationCompleted)
+	woc.operate(ctx)
+
+	// complete the second pod
+	makePodsPhase(ctx, woc, apiv1.PodSucceeded)
+	wf, err = wfcset.Get(ctx, wf.ObjectMeta.Name, metav1.GetOptions{})
+	assert.Nil(t, err)
+	woc = newWorkflowOperationCtx(wf, controller)
+	woc.operate(ctx)
+	pods, err = listPods(woc)
+	assert.Nil(t, err)
+	if assert.Equal(t, 2, len(pods.Items)) {
+		assert.Equal(t, "hello1", pods.Items[0].Spec.Containers[1].Env[0].Value)
+		assert.Equal(t, "steps-need-reconcile", pods.Items[1].Spec.Containers[1].Env[0].Value)
+	}
 }
