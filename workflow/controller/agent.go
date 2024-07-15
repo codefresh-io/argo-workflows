@@ -198,11 +198,11 @@ func (woc *wfOperationCtx) createAgentPod(ctx context.Context) (*apiv1.Pod, erro
 	// the `init` container populates the shared empty-dir volume with tokens
 	agentInitCtr := agentCtrTemplate.DeepCopy()
 	agentInitCtr.Name = common.InitContainerName
-	agentInitCtr.Args = []string{"agent", "init"}
+	agentInitCtr.Args = []string{"agent", "init", "--loglevel", getExecutorLogLevel()}
 	// the `main` container runs the actual work
 	agentMainCtr := agentCtrTemplate.DeepCopy()
 	agentMainCtr.Name = common.MainContainerName
-	agentMainCtr.Args = []string{"agent", "main"}
+	agentMainCtr.Args = []string{"agent", "main", "--loglevel", getExecutorLogLevel()}
 
 	pod := &apiv1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
@@ -243,6 +243,7 @@ func (woc *wfOperationCtx) createAgentPod(ctx context.Context) (*apiv1.Pod, erro
 	tmpl := &wfv1.Template{}
 	addSchedulingConstraints(pod, woc.execWf.Spec.DeepCopy(), tmpl)
 	woc.addMetadata(pod, tmpl)
+	woc.addDNSConfig(pod)
 
 	if woc.execWf.Spec.HasPodSpecPatch() {
 		patchedPodSpec, err := util.ApplyPodSpecPatch(pod.Spec, woc.execWf.Spec.PodSpecPatch)

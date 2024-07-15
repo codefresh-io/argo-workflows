@@ -46,13 +46,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.platform }}-${{ matrix.target }}-buildx-
 
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
-
       - name: Docker Login
         uses: docker/login-action@v2
         with:
@@ -73,15 +66,6 @@ jobs:
 
           tag_suffix=$(echo $PLATFORM | sed -r "s/\//-/g")
           image_name="${DOCKERIO_ORG}/${TARGET}:${tag}-${tag_suffix}"
-
-          ## Codefresh - remove dockerhub
-          # docker buildx build \
-          #   --cache-from "type=local,src=/tmp/.buildx-cache" \
-          #   --cache-to "type=local,dest=/tmp/.buildx-cache" \
-          #   --output "type=image,push=true" \
-          #   --platform="${PLATFORM}" \
-          #   --target $TARGET \
-          #   --tag $image_name .
 
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
@@ -121,13 +105,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.platform }}-${{ matrix.target }}-buildx-
 
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
-
       - name: Docker Login
         uses: docker/login-action@v2
         with:
@@ -149,15 +126,6 @@ jobs:
           tag_suffix=$(echo $PLATFORM | sed -r "s/\//-/g")
           image_name="${DOCKERIO_ORG}/${TARGET}:${tag}-${tag_suffix}"
 
-          ## Codefresh - remove dockerhub
-          # docker buildx build \
-          #   --cache-from "type=local,src=/tmp/.buildx-cache" \
-          #   --cache-to "type=local,dest=/tmp/.buildx-cache" \
-          #   --output "type=image,push=true" \
-          #   --platform="${PLATFORM}" \
-          #   --target $TARGET \
-          #   --tag $image_name .
-
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
             --cache-to "type=local,dest=/tmp/.buildx-cache" \
@@ -172,17 +140,11 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v2
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
 
       - name: Login to Quay
-        uses: Azure/docker-login@v1
+        uses: docker/login-action@v2
         with:
-          login-server: quay.io
+          registry: quay.io
           username: ${{ secrets.QUAYIO_USERNAME }}
           password: ${{ secrets.QUAYIO_PASSWORD }}
 
@@ -215,17 +177,11 @@ jobs:
     needs: [ build-linux-amd64, build-linux-arm64, build-windows ]
     steps:
       - uses: actions/checkout@v2
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
 
       - name: Login to Quay
-        uses: Azure/docker-login@v1
+        uses: docker/login-action@v2
         with:
-          login-server: quay.io
+          registry: quay.io
           username: ${{ secrets.QUAYIO_USERNAME }}
           password: ${{ secrets.QUAYIO_PASSWORD }}
 
@@ -271,13 +227,6 @@ jobs:
         platform: [ linux/amd64 ]
         target: [ workflow-controller, argocli, argoexec ]
     steps:
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
-
       - name: Login to Quay
         uses: Azure/docker-login@v1
         with:
@@ -297,8 +246,6 @@ jobs:
           fi
 
           image_name="${DOCKERIO_ORG}/${TARGET}:${tag}"
-          ## Codefresh - remove dockerhub
-          # docker pull $image_name
           docker pull quay.io/$image_name
 
   test-images-windows:
@@ -307,13 +254,6 @@ jobs:
     runs-on: windows-2022
     needs: [ push-images ]
     steps:
-      ## Codefresh - remove dockerhub
-      # - name: Docker Login
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_PASSWORD }}
-
       - name: Login to Quay
         uses: Azure/docker-login@v1
         with:
@@ -333,8 +273,6 @@ jobs:
           targets="argoexec"
           for target in $targets; do
             image_name="${docker_org}/${target}:${tag}"
-            ## Codefresh - remove dockerhub
-            # docker pull $image_name
             docker pull quay.io/$image_name
           done
 
@@ -358,11 +296,13 @@ jobs:
         with:
           path: ui/node_modules
           key: ${{ runner.os }}-node-dep-v1-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - name: go build cache
+        uses: actions/cache@v3
         with:
           path: /home/runner/.cache/go-build
           key: GOCACHE-v2-${{ hashFiles('**/go.mod') }}
-      - uses: actions/cache@v3
+      - name: go mod cache
+        uses: actions/cache@v3
         with:
           path: /home/runner/go/pkg/mod
           key: GOMODCACHE-v2-${{ hashFiles('**/go.mod') }}

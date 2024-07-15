@@ -7,11 +7,20 @@
 Then get a list of commits you may want to cherry-pick:
 
 ```bash
-./hack/what-to-cherry-pick.sh release-3.3 "fix"
-./hack/what-to-cherry-pick.sh release-3.3 "chore(deps)"
-./hack/what-to-cherry-pick.sh release-3.3 "build"
-./hack/what-to-cherry-pick.sh release-3.3 "ci"
+./hack/cherry-pick.sh release-3.3 "fix"
+./hack/cherry-pick.sh release-3.3 "chore(deps)"
+./hack/cherry-pick.sh release-3.3 "build"
+./hack/cherry-pick.sh release-3.3 "ci"
 ```
+
+To automatically cherry-pick, run the following:
+
+```bash
+./hack/cherry-pick.sh release-3.3 "fix" false
+```
+
+Then look for "failed to cherry-pick" in the log to find commits that fail to be cherry-picked and decide if a
+manual patch is necessary.
 
 Ignore:
 
