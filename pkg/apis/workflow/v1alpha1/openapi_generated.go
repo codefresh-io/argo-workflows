@@ -19,6 +19,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.Arguments":                     schema_pkg_apis_workflow_v1alpha1_Arguments(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.ArtGCStatus":                   schema_pkg_apis_workflow_v1alpha1_ArtGCStatus(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.Artifact":                      schema_pkg_apis_workflow_v1alpha1_Artifact(ref),
+		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.ArtifactByManifestRequest":     schema_pkg_apis_workflow_v1alpha1_ArtifactByManifestRequest(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.ArtifactGC":                    schema_pkg_apis_workflow_v1alpha1_ArtifactGC(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.ArtifactGCSpec":                schema_pkg_apis_workflow_v1alpha1_ArtifactGCSpec(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.ArtifactGCStatus":              schema_pkg_apis_workflow_v1alpha1_ArtifactGCStatus(ref),
@@ -131,6 +132,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SubmitOpts":                    schema_pkg_apis_workflow_v1alpha1_SubmitOpts(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SuppliedValueFrom":             schema_pkg_apis_workflow_v1alpha1_SuppliedValueFrom(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SuspendTemplate":               schema_pkg_apis_workflow_v1alpha1_SuspendTemplate(ref),
+		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SyncSelector":                  schema_pkg_apis_workflow_v1alpha1_SyncSelector(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.Synchronization":               schema_pkg_apis_workflow_v1alpha1_Synchronization(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SynchronizationStatus":         schema_pkg_apis_workflow_v1alpha1_SynchronizationStatus(ref),
 		"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.TTLStrategy":                   schema_pkg_apis_workflow_v1alpha1_TTLStrategy(ref),
@@ -473,6 +475,25 @@ func schema_pkg_apis_workflow_v1alpha1_Artifact(ref common.ReferenceCallback) co
 		},
 		Dependencies: []string{
 			"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.ArchiveStrategy", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.ArtifactGC", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.ArtifactoryArtifact", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.AzureArtifact", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.GCSArtifact", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.GitArtifact", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.HDFSArtifact", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.HTTPArtifact", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.OSSArtifact", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.RawArtifact", "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.S3Artifact"},
+	}
+}
+
+func schema_pkg_apis_workflow_v1alpha1_ArtifactByManifestRequest(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"workflow": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.Workflow"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.Workflow"},
 	}
 }
 
@@ -3860,9 +3881,25 @@ func schema_pkg_apis_workflow_v1alpha1_Mutex(ref common.ReferenceCallback) commo
 							Format:      "",
 						},
 					},
+					"selectors": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to mutex key to make concurrency more customizable",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SyncSelector"),
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
+		Dependencies: []string{
+			"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SyncSelector"},
 	}
 }
 
@@ -5679,11 +5716,25 @@ func schema_pkg_apis_workflow_v1alpha1_SemaphoreRef(ref common.ReferenceCallback
 							Format:      "",
 						},
 					},
+					"selectors": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to semaphore key to make concurrency more customizable",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SyncSelector"),
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/api/core/v1.ConfigMapKeySelector"},
+			"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1.SyncSelector", "k8s.io/api/core/v1.ConfigMapKeySelector"},
 	}
 }
 
@@ -5931,6 +5982,33 @@ func schema_pkg_apis_workflow_v1alpha1_SuspendTemplate(ref common.ReferenceCallb
 					"duration": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Duration is the seconds to wait before automatically resuming a template. Must be a string. Default unit is seconds. Could also be a Duration, e.g.: \"2m\", \"6h\"",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_workflow_v1alpha1_SyncSelector(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Synchronization selector",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the selector",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"template": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Template replaced with global variables",
 							Type:        []string{"string"},
 							Format:      "",
 						},

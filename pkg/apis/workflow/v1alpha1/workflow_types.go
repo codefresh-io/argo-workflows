@@ -1007,6 +1007,10 @@ func (a *Artifact) CleanPath() error {
 	return nil
 }
 
+type ArtifactByManifestRequest struct {
+	Workflow *Workflow `protobuf:"bytes,1,opt,name=workflow" json:"workflow,omitempty"`
+}
+
 // PodGC describes how to delete completed pods as they complete
 type PodGC struct {
 	// Strategy is the strategy to use. One of "OnPodCompletion", "OnPodSuccess", "OnWorkflowCompletion", "OnWorkflowSuccess". If unset, does not delete Pods
@@ -1654,12 +1658,23 @@ func (s *Synchronization) GetType() SynchronizationType {
 	return SynchronizationTypeUnknown
 }
 
+// Synchronization selector
+type SyncSelector struct {
+	// Name of the selector
+	Name string `json:"name,omitempty" protobuf:"bytes,1,opt,name=name"`
+
+	// Template replaced with global variables
+	Template string `json:"template,omitempty" protobuf:"bytes,2,opt,name=template"`
+}
+
 // SemaphoreRef is a reference of Semaphore
 type SemaphoreRef struct {
 	// ConfigMapKeyRef is configmap selector for Semaphore configuration
 	ConfigMapKeyRef *apiv1.ConfigMapKeySelector `json:"configMapKeyRef,omitempty" protobuf:"bytes,1,opt,name=configMapKeyRef"`
 	// Namespace is the namespace of the configmap, default: [namespace of workflow]
 	Namespace string `json:"namespace,omitempty" protobuf:"bytes,2,opt,name=namespace"`
+	// Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to semaphore key to make concurrency more customizable
+	Selectors []SyncSelector `json:"selectors,omitempty" protobuf:"bytes,3,opt,name=selectors"`
 }
 
 // Mutex holds Mutex configuration
@@ -1668,6 +1683,8 @@ type Mutex struct {
 	Name string `json:"name,omitempty" protobuf:"bytes,1,opt,name=name"`
 	// Namespace is the namespace of the mutex, default: [namespace of workflow]
 	Namespace string `json:"namespace,omitempty" protobuf:"bytes,2,opt,name=namespace"`
+	// Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to mutex key to make concurrency more customizable
+	Selectors []SyncSelector `json:"selectors,omitempty" protobuf:"bytes,3,opt,name=selectors"`
 }
 
 // WorkflowTemplateRef is a reference to a WorkflowTemplate resource.
