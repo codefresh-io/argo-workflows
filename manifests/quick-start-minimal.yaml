@@ -1797,7 +1797,7 @@ spec:
         - --auth-mode
         - client
         env: []
-        image: quay.io/argoproj/argocli:latest
+        image: quay.io/codefresh/argocli:latest
         name: argo-server
         ports:
         - containerPort: 2746
@@ -1843,7 +1843,11 @@ spec:
         app: workflow-controller
     spec:
       containers:
-      - args: []
+      - args:
+        - --configmap
+        - workflow-controller-configmap
+        - --executor-image
+        - quay.io/codefresh/argoexec:latest
         command:
         - workflow-controller
         env:

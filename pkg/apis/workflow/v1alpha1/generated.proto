@@ -100,6 +100,10 @@ message Artifact {
   optional bool deleted = 13;
 }
 
+message ArtifactByManifestRequest {
+  optional Workflow workflow = 1;
+}
+
 // ArtifactGC describes how to delete artifacts from completed Workflows - this is embedded into the WorkflowLevelArtifactGC, and also used for individual Artifacts to override that as needed
 message ArtifactGC {
   // Strategy is the strategy to use.
@@ -948,6 +952,9 @@ message Mutex {
 
   // Namespace is the namespace of the mutex, default: [namespace of workflow]
   optional string namespace = 2;
+
+  // Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to mutex key to make concurrency more customizable
+  repeated SyncSelector selectors = 3;
 }
 
 // MutexHolding describes the mutex and the object which is holding it.
@@ -1437,6 +1444,9 @@ message SemaphoreRef {
 
   // Namespace is the namespace of the configmap, default: [namespace of workflow]
   optional string namespace = 2;
+
+  // Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to semaphore key to make concurrency more customizable
+  repeated SyncSelector selectors = 3;
 }
 
 message SemaphoreStatus {
@@ -1522,6 +1532,15 @@ message SuspendTemplate {
   // Duration is the seconds to wait before automatically resuming a template. Must be a string. Default unit is seconds.
   // Could also be a Duration, e.g.: "2m", "6h"
   optional string duration = 1;
+}
+
+// Synchronization selector
+message SyncSelector {
+  // Name of the selector
+  optional string name = 1;
+
+  // Template replaced with global variables
+  optional string template = 2;
 }
 
 // Synchronization holds synchronization lock configuration

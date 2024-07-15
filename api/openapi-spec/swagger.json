@@ -3770,6 +3770,48 @@
         }
       }
     },
+    "/artifacts-by-manifest/{podName}/{artifactName}": {
+      "post": {
+        "tags": [
+          "ArtifactService"
+        ],
+        "summary": "Get an output artifact by a full workflow manifest.",
+        "operationId": "ArtifactService_GetOutputArtifactByManifest",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/io.argoproj.workflow.v1alpha1.ArtifactByManifestRequest"
+            }
+          },
+          {
+            "type": "string",
+            "name": "podName",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "artifactName",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An artifact file."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/grpc.gateway.runtime.Error"
+            }
+          }
+        }
+      }
+    },
     "/artifacts-by-uid/{uid}/{nodeId}/{artifactName}": {
       "get": {
         "tags": [
@@ -3854,6 +3896,48 @@
               "type": "string",
               "format": "binary"
             }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/grpc.gateway.runtime.Error"
+            }
+          }
+        }
+      }
+    },
+    "/input-artifacts-by-manifest/{podName}/{artifactName}": {
+      "post": {
+        "tags": [
+          "ArtifactService"
+        ],
+        "summary": "Get an output artifact by a full workflow manifest.",
+        "operationId": "ArtifactService_GetInputArtifactByManifest",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/io.argoproj.workflow.v1alpha1.ArtifactByManifestRequest"
+            }
+          },
+          {
+            "type": "string",
+            "name": "podName",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "artifactName",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An artifact file."
           },
           "default": {
             "description": "An unexpected error response.",
@@ -7534,6 +7618,17 @@
         }
       }
     },
+    "io.argoproj.workflow.v1alpha1.ArtifactByManifestRequest": {
+      "type": "object",
+      "required": [
+        "workflow"
+      ],
+      "properties": {
+        "workflow": {
+          "$ref": "#/definitions/io.argoproj.workflow.v1alpha1.Workflow"
+        }
+      }
+    },
     "io.argoproj.workflow.v1alpha1.ArtifactGC": {
       "description": "ArtifactGC describes how to delete artifacts from completed Workflows - this is embedded into the WorkflowLevelArtifactGC, and also used for individual Artifacts to override that as needed",
       "type": "object",
@@ -9366,6 +9461,13 @@
         "namespace": {
           "description": "Namespace is the namespace of the mutex, default: [namespace of workflow]",
           "type": "string"
+        },
+        "selectors": {
+          "description": "Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to mutex key to make concurrency more customizable",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/io.argoproj.workflow.v1alpha1.SyncSelector"
+          }
         }
       }
     },
@@ -10297,6 +10399,13 @@
         "namespace": {
           "description": "Namespace is the namespace of the configmap, default: [namespace of workflow]",
           "type": "string"
+        },
+        "selectors": {
+          "description": "Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to semaphore key to make concurrency more customizable",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/io.argoproj.workflow.v1alpha1.SyncSelector"
+          }
         }
       }
     },
@@ -10428,6 +10537,20 @@
       "properties": {
         "duration": {
           "description": "Duration is the seconds to wait before automatically resuming a template. Must be a string. Default unit is seconds. Could also be a Duration, e.g.: \"2m\", \"6h\"",
+          "type": "string"
+        }
+      }
+    },
+    "io.argoproj.workflow.v1alpha1.SyncSelector": {
+      "description": "Synchronization selector",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the selector",
+          "type": "string"
+        },
+        "template": {
+          "description": "Template replaced with global variables",
           "type": "string"
         }
       }

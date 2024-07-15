@@ -2148,6 +2148,13 @@ definitions:
       namespace:
         default: '[namespace of workflow]'
         type: string
+      selectors:
+        description: Selectors is a list of references to dynamic values (like parameters,
+          labels, annotations) that can be added to mutex key to make concurrency
+          more customizable
+        items:
+          $ref: '#/definitions/SyncSelector'
+        type: array
     type: object
   NFSVolumeSource:
     description: NFS volumes do not support ownership management or SELinux relabeling.
@@ -3839,6 +3846,13 @@ definitions:
       namespace:
         default: '[namespace of workflow]'
         type: string
+      selectors:
+        description: Selectors is a list of references to dynamic values (like parameters,
+          labels, annotations) that can be added to semaphore key to make concurrency
+          more customizable
+        items:
+          $ref: '#/definitions/SyncSelector'
+        type: array
     type: object
   Sequence:
     description: Sequence expands a workflow step into numeric range
@@ -3934,6 +3948,16 @@ definitions:
         description: |-
           Duration is the seconds to wait before automatically resuming a template. Must be a string. Default unit is seconds.
           Could also be a Duration, e.g.: "2m", "6h"
+        type: string
+    type: object
+  SyncSelector:
+    description: Synchronization selector
+    properties:
+      name:
+        description: Name of the selector
+        type: string
+      template:
+        description: Template replaced with global variables
         type: string
     type: object
   Synchronization:
