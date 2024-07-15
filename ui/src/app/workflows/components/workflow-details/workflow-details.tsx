@@ -196,8 +196,9 @@ export function WorkflowDetails({history, location, match}: RouteComponentProps<
                             popup
                                 .confirm('Confirm', () => <DeleteCheck isWfInDB={isArchivedWorkflow(workflow)} isWfInCluster={isWorkflowInCluster(workflow)} />)
                                 .then(async yes => {
-                                    if (!yes)
+                                    if (!yes) {
                                         return;
+                                    }
 
                                     const allPromises = [];
                                     if (isWorkflowInCluster(workflow)) {
@@ -219,8 +220,9 @@ export function WorkflowDetails({history, location, match}: RouteComponentProps<
                             setSidePanel('retry');
                         } else {
                             popup.confirm('Confirm', `Are you sure you want to ${workflowOperation.title.toLowerCase()} this workflow?`).then(yes => {
-                                if (!yes)
+                                if (!yes) {
                                     return;
+                                }
 
                                 workflowOperation.action(workflow).catch(setError);
                             });
@@ -467,8 +469,9 @@ export function WorkflowDetails({history, location, match}: RouteComponentProps<
 
     function renderResumePopup() {
         return popup.confirm('Confirm', renderSuspendNodeOptions).then(yes => {
-            if (!yes)
+            if (!yes) {
                 return;
+            }
 
             updateOutputParametersForNodeIfRequired()
                 .then(resumeNode)
