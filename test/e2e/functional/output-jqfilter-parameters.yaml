@@ -53,6 +53,7 @@ spec:
       - name: value
     container:
       image: quay.io/codefresh/argoexec:latest
+      imagePullPolicy: Never
       command: [sh, -c]
       args: ["
         echo '<{{inputs.parameters.key}}>' > /tmp/input;

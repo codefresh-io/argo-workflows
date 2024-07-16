@@ -20,6 +20,6 @@ spec:
       - name: json2
     container:
       image: quay.io/codefresh/argoexec:latest
+      imagePullPolicy: Never
       command: [sh, -c]
       args: ["echo '{{inputs.parameters.json1}}' | jq . ; echo '{{inputs.parameters.json2}}' | jq ."]
-
