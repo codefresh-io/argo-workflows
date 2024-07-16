@@ -5,8 +5,7 @@ on:
     tags:
       - v*
     branches:
-      - master
-      - release-*
+      - main
       - dev-*
 
 concurrency:
@@ -21,13 +20,13 @@ permissions:
   contents: read
 
 jobs:
-  build-linux-amd64:
+  build-linux:
     name: Build & push linux
     if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [ linux/amd64 ]
+        platform: [ linux/amd64, linux/arm64 ]
         target: [ workflow-controller, argocli, argoexec ]
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -89,7 +88,7 @@ jobs:
 
   build-windows:
     name: Build & push windows
-    if: github.repository == 'codefresh-io/argo-workflows'
+    if: github.repository == 'argoproj/argo-workflows'
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -97,7 +96,7 @@ jobs:
       - name: Login to Quay
         uses: Azure/docker-login@83efeb77770c98b620c73055fbb59b2847e17dc0 # v1.0.1
         with:
-          registry: quay.io
+          login-server: quay.io
           username: ${{ secrets.QUAYIO_USERNAME }}
           password: ${{ secrets.QUAYIO_PASSWORD }}
 
@@ -108,16 +107,21 @@ jobs:
           docker_org=$DOCKERIO_ORG
 
           tag=$(basename $GITHUB_REF)
-          if [ $tag = "master" ]; then
+          if [ $tag = "main" ]; then
             tag="latest"
           fi
 
           targets="argoexec"
           for target in $targets; do
             image_name="${docker_org}/${target}:${tag}-windows"
-            docker build --target $target -t $image_name -f Dockerfile.windows .
-            ## Codefresh - remove dockerhub
-            # docker push $image_name
+            docker build \
+              --build-arg GIT_COMMIT=$tag \
+              --build-arg GIT_BRANCH=$branch \
+              --build-arg GIT_TREE_STATE=$tree_state \
+              --target $target \
+              -t $image_name \
+              -f Dockerfile.windows \
+              .
 
             docker tag $image_name quay.io/$image_name
             docker push quay.io/$image_name
@@ -128,14 +132,14 @@ jobs:
     name: Push manifest with all images
     if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: ubuntu-latest
-    needs: [ build-linux-amd64, build-linux-arm64, build-windows ]
+    needs: [ build-linux, build-windows ]
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Login to Quay
         uses: Azure/docker-login@83efeb77770c98b620c73055fbb59b2847e17dc0 # v1.0.1
         with:
-          registry: quay.io
+          login-server: quay.io
           username: ${{ secrets.QUAYIO_USERNAME }}
           password: ${{ secrets.QUAYIO_PASSWORD }}
 
@@ -148,7 +152,7 @@ jobs:
           docker_org=$DOCKERIO_ORG
 
           tag=$(basename $GITHUB_REF)
-          if [ $tag = "master" ]; then
+          if [ $tag = "main" ]; then
             tag="latest"
           fi
 
@@ -157,18 +161,13 @@ jobs:
             image_name="${docker_org}/${target}:${tag}"
 
             if [ $target = "argoexec" ]; then
-              ## Codefresh - remove dockerhub
-              # docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64 ${image_name}-windows
               docker manifest create quay.io/$image_name quay.io/${image_name}-linux-arm64 quay.io/${image_name}-linux-amd64 quay.io/${image_name}-windows
             else
-              ## Codefresh - remove dockerhub
-              # docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64
               docker manifest create quay.io/$image_name quay.io/${image_name}-linux-arm64 quay.io/${image_name}-linux-amd64
             fi
 
-            ## Codefresh - remove dockerhub
-            # docker manifest push $image_name
             docker manifest push quay.io/$image_name
+
           done
 
   test-images-linux-amd64:
@@ -195,16 +194,17 @@ jobs:
           TARGET: ${{ matrix.target }}
         run: |
           tag=$(basename $GITHUB_REF)
-          if [ $tag = "master" ]; then
+          if [ $tag = "main" ]; then
             tag="latest"
           fi
 
           image_name="${DOCKERIO_ORG}/${TARGET}:${tag}"
+          docker pull $image_name
           docker pull quay.io/$image_name
 
   test-images-windows:
     name: Try pulling windows
-    if: github.repository == 'codefresh-io/argo-workflows'
+    if: github.repository == 'argoproj/argo-workflows'
     runs-on: windows-2022
     needs: [ push-images ]
     steps:
@@ -220,7 +220,7 @@ jobs:
         run: |
           docker_org=$DOCKERIO_ORG
           tag=$(basename $GITHUB_REF)
-          if [ $tag = "master" ]; then
+          if [ $tag = "main" ]; then
             tag="latest"
           fi
 
@@ -251,28 +251,36 @@ jobs:
         with:
           path: ui/node_modules
           key: ${{ runner.os }}-node-dep-v1-${{ hashFiles('**/yarn.lock') }}
-      - name: go build cache
-        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
-        with:
-          path: /home/runner/.cache/go-build
-          key: GOCACHE-v2-${{ hashFiles('**/go.mod') }}
-      - name: go mod cache
-        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
-        with:
-          path: /home/runner/go/pkg/mod
-          key: GOMODCACHE-v2-${{ hashFiles('**/go.mod') }}
       # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
-      - run: make release-notes VERSION=${GITHUB_REF##*/}
+      - run: |
+          if [ ${GITHUB_REF##*/} = main ]; then
+           echo "VERSION=latest" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          fi
+      - run: go install sigs.k8s.io/bom/cmd/bom@v0.2.0
+      - run: go install github.com/spdx/spdx-sbom-generator/cmd/generator@v0.0.13
+      - run: mkdir -p dist
+      - run: generator -o dist -p .
+      - run: yarn --cwd ui install
+      - run: generator -o dist -p ui
+      - run: bom generate --image quay.io/argoproj/workflow-controller:$VERSION -o dist/workflow-controller.spdx
+      - run: bom generate --image quay.io/argoproj/argocli:$VERSION -o dist/argocli.spdx
+      - run: bom generate --image quay.io/argoproj/argoexec:$VERSION -o dist/argoexec.spdx
+      # pack the boms into one file to make it easy to download
+      - run: tar -zcf dist/sbom.tar.gz dist/*.spdx
+      - run: make release-notes VERSION=$VERSION
       - run: cat release-notes
-      - run: make manifests VERSION=${GITHUB_REF##*/}
+      - run: make manifests VERSION=$VERSION
       - name: Print image tag (please check it is not `:latest`)
         run: |
           grep image: dist/manifests/install.yaml
       - run: go mod download
-      - run: make clis STATIC_FILES=true VERSION=${GITHUB_REF##*/}
+      - run: make clis STATIC_FILES=true VERSION=$VERSION
       - name: Print version (please check it is not dirty)
         run: dist/argo-linux-amd64 version
       - run: make checksums
+
       # https://github.com/softprops/action-gh-release
       # This will publish the release and upload assets.
       # If a conflict occurs (because you are not on a tag), the release will not be updated. This is a short coming
