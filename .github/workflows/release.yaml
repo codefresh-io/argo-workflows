@@ -83,7 +83,6 @@ jobs:
             --platform="${PLATFORM}" \
             --target $TARGET \
             --provenance=false \
-            --tag $image_name \
             --tag quay.io/$image_name .
 
   build-windows:
