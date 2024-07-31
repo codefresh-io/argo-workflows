@@ -149,6 +149,7 @@ Participation in Argo Workflows is governed by the [CNCF Code of Conduct](https:
 
 ## Project Resources
 
+* [Codefresh GitHub organizatio](https://github.com/codefresh-io)
 * [Argo Project GitHub organization](https://github.com/argoproj)
 * [Argo Website](https://argoproj.github.io/)
 * [Argo Slack](https://argoproj.github.io/community/join-slack)
