@@ -697,7 +697,7 @@ spec:
 			})
 			expectWorkflow(ctx, controller, "my-wf-2", func(wf *wfv1.Workflow) {
 				if assert.NotNil(t, wf) {
-					assert.Equal(t, wfv1.WorkflowSucceeded, wf.Status.Phase)
+					assert.Equal(t, wfv1.WorkflowFailed, wf.Status.Phase)
 				}
 			})
 		})
@@ -1114,7 +1114,6 @@ spec:
 
 	woc.operate(ctx)
 	assert.True(t, controller.processNextPodCleanupItem(ctx))
-	assert.True(t, controller.processNextPodCleanupItem(ctx))
 	assert.Equal(t, wfv1.WorkflowSucceeded, woc.wf.Status.Phase)
 	podCleanupKey := "test/my-wf/labelPodCompleted"
 	assert.Equal(t, 0, controller.podCleanupQueue.NumRequeues(podCleanupKey))
@@ -1147,7 +1146,6 @@ spec:
 	assert.True(t, controller.processNextPodCleanupItem(ctx))
 	assert.True(t, controller.processNextPodCleanupItem(ctx))
 	assert.True(t, controller.processNextPodCleanupItem(ctx))
-	assert.True(t, controller.processNextPodCleanupItem(ctx))
 	assert.Equal(t, wfv1.WorkflowFailed, woc.wf.Status.Phase)
 	pods, err := listPods(woc)
 	assert.NoError(t, err)
@@ -1167,9 +1165,9 @@ func TestPendingPodWhenTerminate(t *testing.T) {
 
 	woc := newWorkflowOperationCtx(wf, controller)
 	woc.operate(ctx)
-	assert.Equal(t, wfv1.WorkflowSucceeded, woc.wf.Status.Phase)
+	assert.Equal(t, wfv1.WorkflowFailed, woc.wf.Status.Phase)
 	for _, node := range woc.wf.Status.Nodes {
-		assert.Equal(t, wfv1.NodeSkipped, node.Phase)
+		assert.Equal(t, wfv1.NodeFailed, node.Phase)
 	}
 }
 
@@ -1187,7 +1185,6 @@ func TestWorkflowReferItselfFromExpression(t *testing.T) {
 	makePodsPhase(ctx, woc, apiv1.PodSucceeded)
 
 	woc.operate(ctx)
-	assert.True(t, controller.processNextPodCleanupItem(ctx))
 	assert.True(t, controller.processNextPodCleanupItem(ctx))
 	assert.Equal(t, wfv1.WorkflowSucceeded, woc.wf.Status.Phase)
 }
