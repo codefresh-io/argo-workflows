@@ -14,7 +14,7 @@ spec:
       serviceAccountName: argo-server
       containers:
         - name: argo-server
-          image: quay.io/argoproj/argocli:latest
+          image: quay.io/codefresh/argocli:latest
           securityContext:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
@@ -22,7 +22,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          args: [ server ]
+          args: [server]
           env: []
           ports:
             - name: web
@@ -39,7 +39,7 @@ spec:
               name: tmp
       volumes:
         - name: tmp
-          emptyDir: { }
+          emptyDir: {}
       securityContext:
         runAsNonRoot: true
       nodeSelector:

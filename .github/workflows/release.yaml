@@ -5,7 +5,8 @@ on:
     tags:
       - v*
     branches:
-      - main
+      - master
+      - release-*
       - dev-*
 
 concurrency:
@@ -20,14 +21,14 @@ permissions:
   contents: read
 
 jobs:
-  build-linux:
+  build-linux-amd64:
     name: Build & push linux
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        platform: [ linux/amd64, linux/arm64 ]
-        target: [ workflow-controller, argocli, argoexec ]
+        platform: [linux/amd64]
+        target: [workflow-controller, argocli, argoexec]
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
@@ -47,12 +48,6 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.platform }}-${{ matrix.target }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.platform }}-${{ matrix.target }}-buildx-
-
-      - name: Docker Login
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          username: ${{ secrets.DOCKERIO_USERNAME }}
-          password: ${{ secrets.DOCKERIO_PASSWORD }}
 
       - name: Login to Quay
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
@@ -94,15 +89,10 @@ jobs:
 
   build-windows:
     name: Build & push windows
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - name: Docker Login
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          username: ${{ secrets.DOCKERIO_USERNAME }}
-          password: ${{ secrets.DOCKERIO_PASSWORD }}
 
       - name: Login to Quay
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
@@ -118,23 +108,16 @@ jobs:
           docker_org=$DOCKERIO_ORG
 
           tag=$(basename $GITHUB_REF)
-          if [ $tag = "main" ]; then
+          if [ $tag = "master" ]; then
             tag="latest"
           fi
 
           targets="argoexec"
           for target in $targets; do
             image_name="${docker_org}/${target}:${tag}-windows"
-            docker build \
-              --build-arg GIT_COMMIT=$tag \
-              --build-arg GIT_BRANCH=$branch \
-              --build-arg GIT_TREE_STATE=$tree_state \
-              --target $target \
-              -t $image_name \
-              -f Dockerfile.windows \
-              .
-
-            docker push $image_name
+            docker build --target $target -t $image_name -f Dockerfile.windows .
+            ## Codefresh - remove dockerhub
+            # docker push $image_name
 
             docker tag $image_name quay.io/$image_name
             docker push quay.io/$image_name
@@ -143,16 +126,11 @@ jobs:
 
   push-images:
     name: Push manifest with all images
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: ubuntu-24.04
-    needs: [ build-linux, build-windows ]
+    needs: [build-linux-amd64, build-windows]
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - name: Docker Login
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          username: ${{ secrets.DOCKERIO_USERNAME }}
-          password: ${{ secrets.DOCKERIO_PASSWORD }}
 
       - name: Login to Quay
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
@@ -161,16 +139,9 @@ jobs:
           username: ${{ secrets.QUAYIO_USERNAME }}
           password: ${{ secrets.QUAYIO_PASSWORD }}
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@e1523de7571e31dbe865fd2e80c5c7c23ae71eb4 # v3.4.0
-        with:
-          cosign-release: 'v2.2.3'
-
       - name: Push Multiarch Image
         env:
           DOCKERIO_ORG: ${{ secrets.DOCKERIO_ORG }}
-          COSIGN_PRIVATE_KEY: ${{secrets.COSIGN_PRIVATE_KEY}}
-          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
         run: |
           : ${DOCKER_CONFIG:=~/.docker}
           echo $(jq -c '. + { "experimental": "enabled" }' ${DOCKER_CONFIG}/config.json) > ${DOCKER_CONFIG}/config.json
@@ -178,7 +149,7 @@ jobs:
           docker_org=$DOCKERIO_ORG
 
           tag=$(basename $GITHUB_REF)
-          if [ $tag = "main" ]; then
+          if [ $tag = "master" ]; then
             tag="latest"
           fi
 
@@ -187,36 +158,30 @@ jobs:
             image_name="${docker_org}/${target}:${tag}"
 
             if [ $target = "argoexec" ]; then
-              docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64 ${image_name}-windows
+              ## Codefresh - remove dockerhub
+              # docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64 ${image_name}-windows
               docker manifest create quay.io/$image_name quay.io/${image_name}-linux-arm64 quay.io/${image_name}-linux-amd64 quay.io/${image_name}-windows
             else
-              docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64
+              ## Codefresh - remove dockerhub
+              # docker manifest create $image_name ${image_name}-linux-arm64 ${image_name}-linux-amd64
               docker manifest create quay.io/$image_name quay.io/${image_name}-linux-arm64 quay.io/${image_name}-linux-amd64
             fi
 
-            docker manifest push $image_name
+            ## Codefresh - remove dockerhub
+            # docker manifest push $image_name
             docker manifest push quay.io/$image_name
-
-            cosign sign -y --key env://COSIGN_PRIVATE_KEY quay.io/$image_name
-
           done
 
   test-images-linux-amd64:
     name: Try pulling linux/amd64
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: ubuntu-24.04
-    needs: [ push-images ]
+    needs: [push-images]
     strategy:
       matrix:
-        platform: [ linux/amd64 ]
-        target: [ workflow-controller, argocli, argoexec ]
+        platform: [linux/amd64]
+        target: [workflow-controller, argocli, argoexec]
     steps:
-      - name: Docker Login
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          username: ${{ secrets.DOCKERIO_USERNAME }}
-          password: ${{ secrets.DOCKERIO_PASSWORD }}
-
       - name: Login to Quay
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
@@ -231,7 +196,7 @@ jobs:
           TARGET: ${{ matrix.target }}
         run: |
           tag=$(basename $GITHUB_REF)
-          if [ $tag = "main" ]; then
+          if [ $tag = "master" ]; then
             tag="latest"
           fi
 
@@ -241,16 +206,10 @@ jobs:
 
   test-images-windows:
     name: Try pulling windows
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: windows-2022
-    needs: [ push-images ]
+    needs: [push-images]
     steps:
-      - name: Docker Login
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          username: ${{ secrets.DOCKERIO_USERNAME }}
-          password: ${{ secrets.DOCKERIO_PASSWORD }}
-
       - name: Login to Quay
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
@@ -263,7 +222,7 @@ jobs:
         run: |
           docker_org=$DOCKERIO_ORG
           tag=$(basename $GITHUB_REF)
-          if [ $tag = "main" ]; then
+          if [ $tag = "master" ]; then
             tag="latest"
           fi
 
@@ -276,14 +235,12 @@ jobs:
 
   publish-release:
     permissions:
-      contents: write  # for softprops/action-gh-release to create GitHub release
+      contents: write # for softprops/action-gh-release to create GitHub release
     runs-on: ubuntu-24.04
-    if: github.repository == 'argoproj/argo-workflows'
-    needs: [ push-images, test-images-linux-amd64, test-images-windows ]
+    if: github.repository == 'codefresh-io/argo-workflows'
+    needs: [push-images, test-images-linux-amd64, test-images-windows]
     env:
       NODE_OPTIONS: --max-old-space-size=4096
-      COSIGN_PRIVATE_KEY: ${{secrets.COSIGN_PRIVATE_KEY}}
-      COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
@@ -297,44 +254,27 @@ jobs:
         with:
           path: ui/node_modules
           key: ${{ runner.os }}-node-dep-v1-${{ hashFiles('**/yarn.lock') }}
-      - name: Install cosign
-        uses: sigstore/cosign-installer@e1523de7571e31dbe865fd2e80c5c7c23ae71eb4 # v3.4.0
+      - name: go build cache
+        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
         with:
-          cosign-release: 'v2.2.3'
+          path: /home/runner/.cache/go-build
+          key: GOCACHE-v2-${{ hashFiles('**/go.mod') }}
+      - name: go mod cache
+        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
+        with:
+          path: /home/runner/go/pkg/mod
+          key: GOMODCACHE-v2-${{ hashFiles('**/go.mod') }}
       # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
-      - run: |
-          if [ ${GITHUB_REF##*/} = main ]; then
-           echo "VERSION=latest" >> $GITHUB_ENV
-          else
-            echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          fi
-      - run: go install sigs.k8s.io/bom/cmd/bom@v0.2.0
-      - run: go install github.com/spdx/spdx-sbom-generator/cmd/generator@v0.0.13
-      - run: mkdir -p dist
-      - run: generator -o dist -p .
-      - run: yarn --cwd ui install
-      - run: generator -o dist -p ui
-      - run: bom generate --image quay.io/argoproj/workflow-controller:$VERSION -o dist/workflow-controller.spdx
-      - run: bom generate --image quay.io/argoproj/argocli:$VERSION -o dist/argocli.spdx
-      - run: bom generate --image quay.io/argoproj/argoexec:$VERSION -o dist/argoexec.spdx
-      # pack the boms into one file to make it easy to download
-      - run: tar -zcf dist/sbom.tar.gz dist/*.spdx
-      - run: make release-notes VERSION=$VERSION
+      - run: make release-notes VERSION=${GITHUB_REF##*/}
       - run: cat release-notes
-      - run: make manifests VERSION=$VERSION
+      - run: make manifests VERSION=${GITHUB_REF##*/}
       - name: Print image tag (please check it is not `:latest`)
         run: |
           grep image: dist/manifests/install.yaml
       - run: go mod download
-      - run: make clis STATIC_FILES=true VERSION=$VERSION
+      - run: make clis STATIC_FILES=true VERSION=${GITHUB_REF##*/}
       - name: Print version (please check it is not dirty)
         run: dist/argo-linux-amd64 version
-      - run: make checksums
-      - name: Sign checksums and create public key for release assets
-        run: |
-          cosign sign-blob -y --key env://COSIGN_PRIVATE_KEY ./dist/argo-workflows-cli-checksums.txt > ./dist/argo-workflows-cli-checksums.sig
-          # Retrieves the public key to release as an asset
-          cosign public-key --key env://COSIGN_PRIVATE_KEY > ./dist/argo-workflows-cosign.pub
 
       # https://github.com/softprops/action-gh-release
       # This will publish the release and upload assets.
@@ -348,10 +288,8 @@ jobs:
           body_path: release-notes
           files: |
             dist/argo-*.gz
-            dist/argo-workflows-cli-checksums.txt
-            dist/argo-workflows-cli-checksums.sig
+            dist/argo-*.gz.sha256
             dist/manifests/*.yaml
-            dist/argo-workflows-cosign.pub
             dist/sbom.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
