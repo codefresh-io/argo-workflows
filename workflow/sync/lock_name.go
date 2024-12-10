@@ -2,6 +2,7 @@ package sync
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/argoproj/argo-workflows/v3/errors"
@@ -20,14 +21,16 @@ type lockName struct {
 	ResourceName string
 	Key          string
 	Kind         lockKind
+	Selectors    []v1alpha1.SyncSelector
 }
 
-func newLockName(namespace, resourceName, lockKey string, kind lockKind) *lockName {
+func newLockName(namespace, resourceName, lockKey string, kind lockKind, selectors []v1alpha1.SyncSelector) *lockName {
 	return &lockName{
 		Namespace:    namespace,
 		ResourceName: resourceName,
 		Key:          lockKey,
 		Kind:         kind,
+		Selectors:    selectors,
 	}
 }
 
@@ -37,7 +40,7 @@ func getSemaphoreLockName(sem *v1alpha1.SemaphoreRef, wfNamespace string) (*lock
 		if namespace == "" {
 			namespace = wfNamespace
 		}
-		return newLockName(namespace, sem.ConfigMapKeyRef.Name, sem.ConfigMapKeyRef.Key, lockKindConfigMap), nil
+		return newLockName(namespace, sem.ConfigMapKeyRef.Name, sem.ConfigMapKeyRef.Key, lockKindConfigMap, sem.Selectors), nil
 	}
 	return nil, fmt.Errorf("cannot get LockName for a Semaphore without a ConfigMapRef")
 }
@@ -47,7 +50,7 @@ func getMutexLockName(mtx *v1alpha1.Mutex, wfNamespace string) *lockName {
 	if namespace == "" {
 		namespace = wfNamespace
 	}
-	return newLockName(namespace, mtx.Name, "", lockKindMutex)
+	return newLockName(namespace, mtx.Name, "", lockKindMutex, mtx.Selectors)
 }
 
 func getLockName(item *syncItem, wfNamespace string) (*lockName, error) {
@@ -62,7 +65,10 @@ func getLockName(item *syncItem, wfNamespace string) (*lockName, error) {
 }
 
 func DecodeLockName(name string) (*lockName, error) {
-	items := strings.SplitN(name, "/", 3)
+	splittedLockName := strings.Split(name, "?")
+	lockNameTrimedSelectors := splittedLockName[0]
+	selectors := ParseSelectors(strings.Join(splittedLockName[1:], "?"))
+	items := strings.SplitN(lockNameTrimedSelectors, "/", 3)
 	if len(items) < 3 {
 		return nil, errors.New(errors.CodeBadRequest, "Invalid lock key: unknown format")
 	}
@@ -73,7 +79,7 @@ func DecodeLockName(name string) (*lockName, error) {
 
 	switch lockKind {
 	case lockKindMutex:
-		lock = lockName{Namespace: namespace, Kind: lockKind, ResourceName: items[2]}
+		lock = lockName{Namespace: namespace, Kind: lockKind, ResourceName: items[2], Selectors: selectors}
 	case lockKindConfigMap:
 		components := strings.Split(items[2], "/")
 
@@ -81,7 +87,7 @@ func DecodeLockName(name string) (*lockName, error) {
 			return nil, errors.New(errors.CodeBadRequest, "Invalid ConfigMap lock key: unknown format")
 		}
 
-		lock = lockName{Namespace: namespace, Kind: lockKind, ResourceName: components[0], Key: components[1]}
+		lock = lockName{Namespace: namespace, Kind: lockKind, ResourceName: components[0], Key: components[1], Selectors: selectors}
 	default:
 		return nil, errors.New(errors.CodeBadRequest, fmt.Sprintf("Invalid lock key, unexpected kind: %s", lockKind))
 	}
@@ -93,11 +99,50 @@ func DecodeLockName(name string) (*lockName, error) {
 	return &lock, nil
 }
 
-func (ln *lockName) encodeName() string {
-	if ln.Kind == lockKindMutex {
-		return ln.validateEncoding(fmt.Sprintf("%s/%s/%s", ln.Namespace, ln.Kind, ln.ResourceName))
+func StringifySelectors(selectors []v1alpha1.SyncSelector) string {
+	joinedSelectors := ""
+	for _, selector := range selectors {
+		// at this point template should be already replaced
+		if selector.Template != "" {
+			// escape & and = chars to decode easily later
+			re := regexp.MustCompile("&|=")
+			escapedSelectorName := re.ReplaceAllString(selector.Name, "-")
+			escapedSelectorValue := re.ReplaceAllString(selector.Template, "-")
+
+			joinedSelectors = joinedSelectors + fmt.Sprintf("%s=%s&", escapedSelectorName, escapedSelectorValue)
+		}
 	}
-	return ln.validateEncoding(fmt.Sprintf("%s/%s/%s/%s", ln.Namespace, ln.Kind, ln.ResourceName, ln.Key))
+	return strings.TrimRight(joinedSelectors, "&")
+}
+
+func ParseSelectors(selectors string) []v1alpha1.SyncSelector {
+	parsedSelectors := []v1alpha1.SyncSelector{}
+	splittedSelectors := strings.Split(selectors, "&")
+
+	for _, selectorStr := range splittedSelectors {
+		keyValPair := strings.Split(selectorStr, "=")
+		if len(keyValPair) == 2 {
+			parsedSelectors = append(parsedSelectors, v1alpha1.SyncSelector{
+				Name:     keyValPair[0],
+				Template: keyValPair[1],
+			})
+		}
+		// otherwise consider invalid, do nothing
+	}
+	return parsedSelectors
+}
+
+func (ln *lockName) encodeName() string {
+	encodingBuilder := &strings.Builder{}
+
+	encodingBuilder.WriteString(fmt.Sprintf("%s/%s/%s", ln.Namespace, ln.Kind, ln.ResourceName))
+	if ln.Kind == lockKindConfigMap {
+		encodingBuilder.WriteString(fmt.Sprintf("/%s", ln.Key))
+	}
+	if selectors := StringifySelectors(ln.Selectors); len(selectors) > 0 {
+		encodingBuilder.WriteString(fmt.Sprintf("?%s", selectors))
+	}
+	return ln.validateEncoding(encodingBuilder.String())
 }
 
 func (ln *lockName) validate() error {

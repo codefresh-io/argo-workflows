@@ -2,6 +2,7 @@ package artifacts
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -165,6 +166,11 @@ func (a *ArtifactServer) GetArtifactFile(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	a.getArtifactFromPath(artifact, driver, w, r)
+
+}
+
+func (a *ArtifactServer) getArtifactFromPath(artifact *wfv1.Artifact, driver common.ArtifactDriver, w http.ResponseWriter, r *http.Request) {
 	isDir := strings.HasSuffix(r.URL.Path, "/")
 
 	if !isDir {
@@ -233,15 +239,13 @@ func (a *ArtifactServer) GetArtifactFile(w http.ResponseWriter, r *http.Request)
 	} else { // stream the file itself
 		log.Debugf("not a directory, artifact: %+v", artifact)
 
-		err = a.returnArtifact(w, artifact, driver)
+		err := a.returnArtifact(w, artifact, driver)
 
 		if err != nil {
 			a.httpFromError(err, w)
 		}
 	}
-
 }
-
 func (a *ArtifactServer) getArtifact(w http.ResponseWriter, r *http.Request, isInput bool) {
 	requestPath := strings.SplitN(r.URL.Path, "/", 6)
 	if len(requestPath) != 6 {
@@ -278,6 +282,68 @@ func (a *ArtifactServer) getArtifact(w http.ResponseWriter, r *http.Request, isI
 		a.httpFromError(err, w)
 		return
 	}
+}
+
+func (a *ArtifactServer) GetOutputArtifactByManifest(w http.ResponseWriter, r *http.Request) {
+	a.getArtifactByManifest(w, r, false)
+}
+
+func (a *ArtifactServer) GetInputArtifactByManifest(w http.ResponseWriter, r *http.Request) {
+	a.getArtifactByManifest(w, r, true)
+}
+
+func (a *ArtifactServer) getArtifactByManifest(w http.ResponseWriter, r *http.Request, isInput bool) {
+
+	var req wfv1.ArtifactByManifestRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		a.serverInternalError(err, w)
+		return
+	}
+
+	wf := req.Workflow
+	if wf == nil {
+		a.serverInternalError(err, w)
+		return
+	}
+
+	ctx, err := a.gateKeeping(r, types.NamespaceHolder(wf.GetNamespace()))
+	if err != nil {
+		w.WriteHeader(401)
+		_, _ = w.Write([]byte(err.Error()))
+		return
+	}
+
+	uid := wf.UID
+	requestPath := strings.SplitN(r.URL.Path, "/", 6)
+
+	nodeIdIndex := 2
+	artifactNameIndex := 3
+	fileNameFirstIndex := 4
+
+	var fileName *string
+	if len(requestPath) >= fileNameFirstIndex+1 { // they included a file path in the URL (not just artifact name)
+		joined := strings.Join(requestPath[fileNameFirstIndex:], "/")
+		// sanitize file name
+		cleanedPath := path.Clean(joined)
+		fileName = &cleanedPath
+	} else if len(requestPath) < artifactNameIndex+1 {
+		a.httpBadRequestError(w)
+		return
+	}
+
+	nodeId := requestPath[nodeIdIndex]
+	artifactName := requestPath[artifactNameIndex]
+
+	log.WithFields(log.Fields{"uid": uid, "nodeId": nodeId, "artifactName": artifactName, "isInput": isInput}).Info("Download artifact by manifest")
+
+	art, driver, err := a.getArtifactAndDriver(ctx, nodeId, artifactName, isInput, wf, fileName)
+	if err != nil {
+		a.serverInternalError(err, w)
+		return
+	}
+
+	a.getArtifactFromPath(art, driver, w, r)
 }
 
 func (a *ArtifactServer) GetOutputArtifactByUID(w http.ResponseWriter, r *http.Request) {

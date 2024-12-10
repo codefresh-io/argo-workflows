@@ -7,7 +7,8 @@ on:
       - "!release-2.8"
   pull_request:
     branches:
-      - "main"
+      - "master"
+      - "release-*"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -109,7 +110,7 @@ jobs:
 
   tests:
     name: Unit Tests
-    needs: [ changed-files ]
+    needs: [changed-files]
     if: ${{ needs.changed-files.outputs.tests == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -131,7 +132,7 @@ jobs:
 
   tests-windows:
     name: Windows Unit Tests
-    needs: [ changed-files ]
+    needs: [changed-files]
     if: ${{ needs.changed-files.outputs.tests == 'true' }}
     runs-on: windows-2022
     timeout-minutes: 20
@@ -186,7 +187,7 @@ jobs:
 
   e2e-tests:
     name: E2E Tests
-    needs: [ changed-files, argo-images ]
+    needs: [changed-files, argo-images]
     if: ${{ needs.changed-files.outputs.e2e-tests == 'true' }}
     runs-on: ubuntu-24.04
     # These tests usually finish in ~25m, but occasionally they take much longer due to resource
@@ -261,14 +262,14 @@ jobs:
         if: ${{matrix.test == 'test-java-sdk'}}
         uses: actions/setup-java@387ac29b308b003ca37ba93a6cab5eb57c8f5f93 # v4.0.0
         with:
-          java-version: '8'
+          java-version: "8"
           distribution: adopt
           cache: maven
       - name: Install Python for the SDK
         if: ${{matrix.test == 'test-python-sdk'}}
         uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
-          python-version: '3.x'
+          python-version: "3.x"
           cache: pip
       - name: Install and start K3S
         run: |
@@ -291,7 +292,7 @@ jobs:
       - name: Download images
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
-          pattern: '*_image.tar'
+          pattern: "*_image.tar"
           path: /tmp
       - name: Load images
         run: |
@@ -370,7 +371,7 @@ jobs:
   # see https://github.com/orgs/community/discussions/9141#discussioncomment-2296809 and https://github.com/orgs/community/discussions/26822#discussioncomment-3305794
   e2e-tests-composite-result:
     name: E2E Tests - Composite result
-    needs: [ e2e-tests ]
+    needs: [e2e-tests]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     steps:
@@ -385,7 +386,7 @@ jobs:
 
   codegen:
     name: Codegen
-    needs: [ changed-files ]
+    needs: [changed-files]
     if: ${{ needs.changed-files.outputs.codegen == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -422,7 +423,7 @@ jobs:
 
   lint:
     name: Lint
-    needs: [ changed-files ]
+    needs: [changed-files]
     if: ${{ needs.changed-files.outputs.lint == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15 # must be strictly greater than the timeout in .golangci.yml
@@ -444,7 +445,7 @@ jobs:
 
   ui:
     name: UI
-    needs: [ changed-files ]
+    needs: [changed-files]
     if: ${{ needs.changed-files.outputs.ui == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 6

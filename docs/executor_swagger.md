@@ -2163,6 +2163,7 @@ that the fieldset applies to.
 |------|------|---------|:--------:| ------- |-------------|---------|
 | name | string| `string` |  | | name of the mutex |  |
 | namespace | string| `string` |  | `"[namespace of workflow]"`|  |  |
+| selectors | [][SyncSelector](#sync-selector)| `[]*SyncSelector` |  | | Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to mutex key to make concurrency more customizable |  |
 
 
 
@@ -3552,6 +3553,7 @@ are set, the values in SecurityContext take precedence.
 |------|------|---------|:--------:| ------- |-------------|---------|
 | configMapKeyRef | [ConfigMapKeySelector](#config-map-key-selector)| `ConfigMapKeySelector` |  | |  |  |
 | namespace | string| `string` |  | `"[namespace of workflow]"`|  |  |
+| selectors | [][SyncSelector](#sync-selector)| `[]*SyncSelector` |  | | Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to semaphore key to make concurrency more customizable |  |
 
 
 
@@ -3666,6 +3668,25 @@ otherwise).
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | duration | string| `string` |  | | Duration is the seconds to wait before automatically resuming a template. Must be a string. Default unit is seconds.</br>Could also be a Duration, e.g.: "2m", "6h" |  |
+
+
+
+### <span id="sync-selector"></span> SyncSelector
+
+
+> Synchronization selector
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| name | string| `string` |  | | Name of the selector |  |
+| template | string| `string` |  | | Template replaced with global variables |  |
 
 
 
