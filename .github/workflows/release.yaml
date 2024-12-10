@@ -200,7 +200,6 @@ jobs:
           fi
 
           image_name="${DOCKERIO_ORG}/${TARGET}:${tag}"
-          docker pull $image_name
           docker pull quay.io/$image_name
 
   test-images-windows:
@@ -228,7 +227,6 @@ jobs:
           targets="argoexec"
           for target in $targets; do
             image_name="${docker_org}/${target}:${tag}"
-            docker pull $image_name
             docker pull quay.io/$image_name
           done
 
