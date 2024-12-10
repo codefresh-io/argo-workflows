@@ -128,7 +128,7 @@ jobs:
     name: Push manifest with all images
     if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: ubuntu-24.04
-    needs: [build-linux-amd64, build-windows]
+    needs: [build-linux, build-windows]
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 

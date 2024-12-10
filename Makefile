@@ -20,6 +20,7 @@ GIT_BRANCH            := $(shell git rev-parse --symbolic-full-name --verify --q
 RELEASE_TAG           := $(shell if [[ "$(GIT_TAG)" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$$ ]]; then echo "true"; else echo "false"; fi)
 DEV_BRANCH            := $(shell [ "$(GIT_BRANCH)" = main ] || [ `echo $(GIT_BRANCH) | cut -c -8` = release- ] || [ `echo $(GIT_BRANCH) | cut -c -4` = dev- ] || [ $(RELEASE_TAG) = true ] && echo false || echo true)
 SRC                   := $(GOPATH)/src/github.com/argoproj/argo-workflows
+VERSION               := latest
 # VERSION is the version to be used for files in manifests and should always be latest unless we are releasing
 # we assume HEAD means you are on a tag
 ifeq ($(RELEASE_TAG),true)
