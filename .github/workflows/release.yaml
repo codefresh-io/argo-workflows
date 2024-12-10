@@ -21,7 +21,7 @@ permissions:
   contents: read
 
 jobs:
-  build-linux-amd64:
+  build-linux:
     name: Build & push linux
     if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: ubuntu-24.04

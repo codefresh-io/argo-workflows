@@ -20,30 +20,6 @@ GIT_BRANCH            := $(shell git rev-parse --symbolic-full-name --verify --q
 RELEASE_TAG           := $(shell if [[ "$(GIT_TAG)" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$$ ]]; then echo "true"; else echo "false"; fi)
 DEV_BRANCH            := $(shell [ "$(GIT_BRANCH)" = main ] || [ `echo $(GIT_BRANCH) | cut -c -8` = release- ] || [ `echo $(GIT_BRANCH) | cut -c -4` = dev- ] || [ $(RELEASE_TAG) = true ] && echo false || echo true)
 SRC                   := $(GOPATH)/src/github.com/argoproj/argo-workflows
-
-GREP_LOGS             := ""
-
-
-# docker image publishing options
-IMAGE_NAMESPACE       ?= quay.io/argoproj
-DEV_IMAGE             ?= $(shell [ `uname -s` = Darwin ] && echo true || echo false)
-
-# declares which cluster to import to in case it's not the default name
-K3D_CLUSTER_NAME      ?= k3s-default
-
-# The name of the namespace where Kubernetes resources/RBAC will be installed
-KUBE_NAMESPACE        ?= argo
-MANAGED_NAMESPACE     ?= $(KUBE_NAMESPACE)
-
-# Timeout for wait conditions
-E2E_WAIT_TIMEOUT      ?= 1m
-
-E2E_PARALLEL          ?= 20
-E2E_SUITE_TIMEOUT     ?= 15m
-
-VERSION               := latest
-DOCKER_PUSH           := false
-
 # VERSION is the version to be used for files in manifests and should always be latest unless we are releasing
 # we assume HEAD means you are on a tag
 ifeq ($(RELEASE_TAG),true)
