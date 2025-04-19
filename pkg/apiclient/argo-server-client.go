@@ -19,7 +19,7 @@ import (
 
 const (
 	// MaxGRPCMessageSize contains max grpc message size supported by the client
-	MaxClientGRPCMessageSize = 100 * 1024 * 1024
+	MaxClientGRPCMessageSize = 300 * 1024 * 1024
 )
 
 type argoServerClient struct {
