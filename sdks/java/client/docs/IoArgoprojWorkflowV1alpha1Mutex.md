@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **String** | name of the mutex |  [optional]
 **namespace** | **String** | Namespace is the namespace of the mutex, default: [namespace of workflow] |  [optional]
+**selectors** | [**List&lt;IoArgoprojWorkflowV1alpha1SyncSelector&gt;**](IoArgoprojWorkflowV1alpha1SyncSelector.md) | Selectors is a list of references to dynamic values (like parameters, labels, annotations) that can be added to mutex key to make concurrency more customizable |  [optional]
 
 
 

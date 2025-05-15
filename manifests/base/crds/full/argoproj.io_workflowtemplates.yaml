@@ -2119,6 +2119,15 @@ spec:
                         type: string
                       namespace:
                         type: string
+                      selectors:
+                        items:
+                          properties:
+                            name:
+                              type: string
+                            template:
+                              type: string
+                          type: object
+                        type: array
                     type: object
                   mutexes:
                     items:
@@ -2127,6 +2136,15 @@ spec:
                           type: string
                         namespace:
                           type: string
+                        selectors:
+                          items:
+                            properties:
+                              name:
+                                type: string
+                              template:
+                                type: string
+                            type: object
+                          type: array
                       type: object
                     type: array
                   semaphore:
@@ -2146,6 +2164,15 @@ spec:
                         x-kubernetes-map-type: atomic
                       namespace:
                         type: string
+                      selectors:
+                        items:
+                          properties:
+                            name:
+                              type: string
+                            template:
+                              type: string
+                          type: object
+                        type: array
                     type: object
                   semaphores:
                     items:
@@ -2165,6 +2192,15 @@ spec:
                           x-kubernetes-map-type: atomic
                         namespace:
                           type: string
+                        selectors:
+                          items:
+                            properties:
+                              name:
+                                type: string
+                              template:
+                                type: string
+                            type: object
+                          type: array
                       type: object
                     type: array
                 type: object
@@ -10659,6 +10695,15 @@ spec:
                             type: string
                           namespace:
                             type: string
+                          selectors:
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                                template:
+                                  type: string
+                              type: object
+                            type: array
                         type: object
                       mutexes:
                         items:
@@ -10667,6 +10712,15 @@ spec:
                               type: string
                             namespace:
                               type: string
+                            selectors:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  template:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                         type: array
                       semaphore:
@@ -10686,6 +10740,15 @@ spec:
                             x-kubernetes-map-type: atomic
                           namespace:
                             type: string
+                          selectors:
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                                template:
+                                  type: string
+                              type: object
+                            type: array
                         type: object
                       semaphores:
                         items:
@@ -10705,6 +10768,15 @@ spec:
                               x-kubernetes-map-type: atomic
                             namespace:
                               type: string
+                            selectors:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  template:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                         type: array
                     type: object
@@ -20000,6 +20072,15 @@ spec:
                               type: string
                             namespace:
                               type: string
+                            selectors:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  template:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                         mutexes:
                           items:
@@ -20008,6 +20089,15 @@ spec:
                                 type: string
                               namespace:
                                 type: string
+                              selectors:
+                                items:
+                                  properties:
+                                    name:
+                                      type: string
+                                    template:
+                                      type: string
+                                  type: object
+                                type: array
                             type: object
                           type: array
                         semaphore:
@@ -20027,6 +20117,15 @@ spec:
                               x-kubernetes-map-type: atomic
                             namespace:
                               type: string
+                            selectors:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  template:
+                                    type: string
+                                type: object
+                              type: array
                           type: object
                         semaphores:
                           items:
@@ -20046,6 +20145,15 @@ spec:
                                 x-kubernetes-map-type: atomic
                               namespace:
                                 type: string
+                              selectors:
+                                items:
+                                  properties:
+                                    name:
+                                      type: string
+                                    template:
+                                      type: string
+                                  type: object
+                                type: array
                             type: object
                           type: array
                       type: object

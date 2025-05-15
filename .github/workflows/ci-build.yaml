@@ -121,7 +121,7 @@ jobs:
 
   tests:
     name: Unit Tests
-    needs: [ changed-files ]
+    needs: [changed-files]
     if: ${{ needs.changed-files.outputs.tests == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -143,7 +143,7 @@ jobs:
 
   tests-windows:
     name: Windows Unit Tests
-    needs: [ changed-files ]
+    needs: [changed-files]
     if: ${{ needs.changed-files.outputs.tests == 'true' }}
     runs-on: windows-2022
     timeout-minutes: 20

@@ -1102,11 +1102,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     mutex=IoArgoprojWorkflowV1alpha1Mutex(
                         name="name_example",
                         namespace="namespace_example",
+                        selectors=[
+                            IoArgoprojWorkflowV1alpha1SyncSelector(
+                                name="name_example",
+                                template="template_example",
+                            ),
+                        ],
                     ),
                     mutexes=[
                         IoArgoprojWorkflowV1alpha1Mutex(
                             name="name_example",
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                     ],
                     semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -1116,6 +1128,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             optional=True,
                         ),
                         namespace="namespace_example",
+                        selectors=[
+                            IoArgoprojWorkflowV1alpha1SyncSelector(
+                                name="name_example",
+                                template="template_example",
+                            ),
+                        ],
                     ),
                     semaphores=[
                         IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -1125,6 +1143,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 optional=True,
                             ),
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -5516,11 +5540,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         mutex=IoArgoprojWorkflowV1alpha1Mutex(
                             name="name_example",
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                         mutexes=[
                             IoArgoprojWorkflowV1alpha1Mutex(
                                 name="name_example",
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                         ],
                         semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -5530,6 +5566,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 optional=True,
                             ),
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                         semaphores=[
                             IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -5539,6 +5581,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     optional=True,
                                 ),
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                         ],
                     ),
@@ -10338,11 +10386,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             mutex=IoArgoprojWorkflowV1alpha1Mutex(
                                 name="name_example",
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                             mutexes=[
                                 IoArgoprojWorkflowV1alpha1Mutex(
                                     name="name_example",
                                     namespace="namespace_example",
+                                    selectors=[
+                                        IoArgoprojWorkflowV1alpha1SyncSelector(
+                                            name="name_example",
+                                            template="template_example",
+                                        ),
+                                    ],
                                 ),
                             ],
                             semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -10352,6 +10412,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     optional=True,
                                 ),
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                             semaphores=[
                                 IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -10361,6 +10427,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                         optional=True,
                                     ),
                                     namespace="namespace_example",
+                                    selectors=[
+                                        IoArgoprojWorkflowV1alpha1SyncSelector(
+                                            name="name_example",
+                                            template="template_example",
+                                        ),
+                                    ],
                                 ),
                             ],
                         ),
@@ -12646,11 +12718,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     mutex=IoArgoprojWorkflowV1alpha1Mutex(
                         name="name_example",
                         namespace="namespace_example",
+                        selectors=[
+                            IoArgoprojWorkflowV1alpha1SyncSelector(
+                                name="name_example",
+                                template="template_example",
+                            ),
+                        ],
                     ),
                     mutexes=[
                         IoArgoprojWorkflowV1alpha1Mutex(
                             name="name_example",
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                     ],
                     semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -12660,6 +12744,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             optional=True,
                         ),
                         namespace="namespace_example",
+                        selectors=[
+                            IoArgoprojWorkflowV1alpha1SyncSelector(
+                                name="name_example",
+                                template="template_example",
+                            ),
+                        ],
                     ),
                     semaphores=[
                         IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -12669,6 +12759,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 optional=True,
                             ),
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -17060,11 +17156,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         mutex=IoArgoprojWorkflowV1alpha1Mutex(
                             name="name_example",
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                         mutexes=[
                             IoArgoprojWorkflowV1alpha1Mutex(
                                 name="name_example",
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                         ],
                         semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -17074,6 +17182,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 optional=True,
                             ),
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                         semaphores=[
                             IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -17083,6 +17197,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     optional=True,
                                 ),
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                         ],
                     ),
@@ -21882,11 +22002,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             mutex=IoArgoprojWorkflowV1alpha1Mutex(
                                 name="name_example",
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                             mutexes=[
                                 IoArgoprojWorkflowV1alpha1Mutex(
                                     name="name_example",
                                     namespace="namespace_example",
+                                    selectors=[
+                                        IoArgoprojWorkflowV1alpha1SyncSelector(
+                                            name="name_example",
+                                            template="template_example",
+                                        ),
+                                    ],
                                 ),
                             ],
                             semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -21896,6 +22028,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     optional=True,
                                 ),
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                             semaphores=[
                                 IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -21905,6 +22043,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                         optional=True,
                                     ),
                                     namespace="namespace_example",
+                                    selectors=[
+                                        IoArgoprojWorkflowV1alpha1SyncSelector(
+                                            name="name_example",
+                                            template="template_example",
+                                        ),
+                                    ],
                                 ),
                             ],
                         ),
@@ -24101,11 +24245,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     mutex=IoArgoprojWorkflowV1alpha1Mutex(
                         name="name_example",
                         namespace="namespace_example",
+                        selectors=[
+                            IoArgoprojWorkflowV1alpha1SyncSelector(
+                                name="name_example",
+                                template="template_example",
+                            ),
+                        ],
                     ),
                     mutexes=[
                         IoArgoprojWorkflowV1alpha1Mutex(
                             name="name_example",
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                     ],
                     semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -24115,6 +24271,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             optional=True,
                         ),
                         namespace="namespace_example",
+                        selectors=[
+                            IoArgoprojWorkflowV1alpha1SyncSelector(
+                                name="name_example",
+                                template="template_example",
+                            ),
+                        ],
                     ),
                     semaphores=[
                         IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -24124,6 +24286,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 optional=True,
                             ),
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -28515,11 +28683,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         mutex=IoArgoprojWorkflowV1alpha1Mutex(
                             name="name_example",
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                         mutexes=[
                             IoArgoprojWorkflowV1alpha1Mutex(
                                 name="name_example",
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                         ],
                         semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -28529,6 +28709,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 optional=True,
                             ),
                             namespace="namespace_example",
+                            selectors=[
+                                IoArgoprojWorkflowV1alpha1SyncSelector(
+                                    name="name_example",
+                                    template="template_example",
+                                ),
+                            ],
                         ),
                         semaphores=[
                             IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -28538,6 +28724,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     optional=True,
                                 ),
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                         ],
                     ),
@@ -33337,11 +33529,23 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             mutex=IoArgoprojWorkflowV1alpha1Mutex(
                                 name="name_example",
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                             mutexes=[
                                 IoArgoprojWorkflowV1alpha1Mutex(
                                     name="name_example",
                                     namespace="namespace_example",
+                                    selectors=[
+                                        IoArgoprojWorkflowV1alpha1SyncSelector(
+                                            name="name_example",
+                                            template="template_example",
+                                        ),
+                                    ],
                                 ),
                             ],
                             semaphore=IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -33351,6 +33555,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     optional=True,
                                 ),
                                 namespace="namespace_example",
+                                selectors=[
+                                    IoArgoprojWorkflowV1alpha1SyncSelector(
+                                        name="name_example",
+                                        template="template_example",
+                                    ),
+                                ],
                             ),
                             semaphores=[
                                 IoArgoprojWorkflowV1alpha1SemaphoreRef(
@@ -33360,6 +33570,12 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                         optional=True,
                                     ),
                                     namespace="namespace_example",
+                                    selectors=[
+                                        IoArgoprojWorkflowV1alpha1SyncSelector(
+                                            name="name_example",
+                                            template="template_example",
+                                        ),
+                                    ],
                                 ),
                             ],
                         ),
