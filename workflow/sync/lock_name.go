@@ -135,12 +135,12 @@ func ParseSelectors(selectors string) []v1alpha1.SyncSelector {
 func (ln *lockName) encodeName() string {
 	encodingBuilder := &strings.Builder{}
 
-	encodingBuilder.WriteString(fmt.Sprintf("%s/%s/%s", ln.Namespace, ln.Kind, ln.ResourceName))
+	fmt.Fprintf(encodingBuilder, "%s/%s/%s", ln.Namespace, ln.Kind, ln.ResourceName)
 	if ln.Kind == lockKindConfigMap {
-		encodingBuilder.WriteString(fmt.Sprintf("/%s", ln.Key))
+		fmt.Fprintf(encodingBuilder, "/%s", ln.Key)
 	}
 	if selectors := StringifySelectors(ln.Selectors); len(selectors) > 0 {
-		encodingBuilder.WriteString(fmt.Sprintf("?%s", selectors))
+		fmt.Fprintf(encodingBuilder, "?%s", selectors)
 	}
 	return ln.validateEncoding(encodingBuilder.String())
 }

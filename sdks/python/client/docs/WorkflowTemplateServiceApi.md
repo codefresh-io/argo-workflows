@@ -1067,6 +1067,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     run_as_group=1,
                     run_as_non_root=True,
                     run_as_user=1,
+                    se_linux_change_policy="se_linux_change_policy_example",
                     se_linux_options=SELinuxOptions(
                         level="level_example",
                         role="role_example",
@@ -1080,6 +1081,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     supplemental_groups=[
                         1,
                     ],
+                    supplemental_groups_policy="supplemental_groups_policy_example",
                     sysctls=[
                         Sysctl(
                             name="name_example",
@@ -1792,6 +1794,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             claims=[
                                 ResourceClaim(
                                     name="name_example",
+                                    request="request_example",
                                 ),
                             ],
                             limits={
@@ -2090,6 +2093,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -3301,6 +3305,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -4487,6 +4492,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             claims=[
                                 ResourceClaim(
                                     name="name_example",
+                                    request="request_example",
                                 ),
                             ],
                             limits={
@@ -4602,6 +4608,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         run_as_group=1,
                         run_as_non_root=True,
                         run_as_user=1,
+                        se_linux_change_policy="se_linux_change_policy_example",
                         se_linux_options=SELinuxOptions(
                             level="level_example",
                             role="role_example",
@@ -4615,6 +4622,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         supplemental_groups=[
                             1,
                         ],
+                        supplemental_groups_policy="supplemental_groups_policy_example",
                         sysctls=[
                             Sysctl(
                                 name="name_example",
@@ -4820,6 +4828,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -5811,6 +5820,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 path="path_example",
                                 type="type_example",
                             ),
+                            image=ImageVolumeSource(
+                                pull_policy="pull_policy_example",
+                                reference="reference_example",
+                            ),
                             iscsi=ISCSIVolumeSource(
                                 chap_auth_discovery=True,
                                 chap_auth_session=True,
@@ -6627,6 +6640,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -6925,6 +6939,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                         claims=[
                                             ResourceClaim(
                                                 name="name_example",
+                                                request="request_example",
                                             ),
                                         ],
                                         limits={
@@ -8136,6 +8151,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -9322,6 +9338,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -9437,6 +9454,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             run_as_group=1,
                             run_as_non_root=True,
                             run_as_user=1,
+                            se_linux_change_policy="se_linux_change_policy_example",
                             se_linux_options=SELinuxOptions(
                                 level="level_example",
                                 role="role_example",
@@ -9450,6 +9468,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             supplemental_groups=[
                                 1,
                             ],
+                            supplemental_groups_policy="supplemental_groups_policy_example",
                             sysctls=[
                                 Sysctl(
                                     name="name_example",
@@ -9655,6 +9674,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -10646,6 +10666,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     path="path_example",
                                     type="type_example",
                                 ),
+                                image=ImageVolumeSource(
+                                    pull_policy="pull_policy_example",
+                                    reference="reference_example",
+                                ),
                                 iscsi=ISCSIVolumeSource(
                                     chap_auth_discovery=True,
                                     chap_auth_session=True,
@@ -11177,6 +11201,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             path="path_example",
                             type="type_example",
                         ),
+                        image=ImageVolumeSource(
+                            pull_policy="pull_policy_example",
+                            reference="reference_example",
+                        ),
                         iscsi=ISCSIVolumeSource(
                             chap_auth_discovery=True,
                             chap_auth_session=True,
@@ -11455,6 +11483,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
     delete_options_dry_run = [
         "deleteOptions.dryRun_example",
     ] # [str] | When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed +optional +listType=atomic. (optional)
+    delete_options_ignore_store_read_error_with_cluster_breaking_potential = True # bool | if set to true, it will trigger an unsafe deletion of the resource in case the normal deletion flow fails with a corrupt object error. A resource is considered corrupt if it can not be retrieved from the underlying storage successfully because of a) its data can not be transformed e.g. decryption failure, or b) it fails to decode into an object. NOTE: unsafe deletion ignores finalizer constraints, skips precondition checks, and removes the object from the storage. WARNING: This may potentially break the cluster if the workload associated with the resource being unsafe-deleted relies on normal deletion flow. Use only if you REALLY know what you are doing. The default value is false, and the user must opt in to enable it +optional. (optional)
 
     # example passing only required values which don't have defaults set
     try:
@@ -11466,7 +11495,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     # and optional values
     try:
-        api_response = api_instance.delete_workflow_template(namespace, name, delete_options_grace_period_seconds=delete_options_grace_period_seconds, delete_options_preconditions_uid=delete_options_preconditions_uid, delete_options_preconditions_resource_version=delete_options_preconditions_resource_version, delete_options_orphan_dependents=delete_options_orphan_dependents, delete_options_propagation_policy=delete_options_propagation_policy, delete_options_dry_run=delete_options_dry_run)
+        api_response = api_instance.delete_workflow_template(namespace, name, delete_options_grace_period_seconds=delete_options_grace_period_seconds, delete_options_preconditions_uid=delete_options_preconditions_uid, delete_options_preconditions_resource_version=delete_options_preconditions_resource_version, delete_options_orphan_dependents=delete_options_orphan_dependents, delete_options_propagation_policy=delete_options_propagation_policy, delete_options_dry_run=delete_options_dry_run, delete_options_ignore_store_read_error_with_cluster_breaking_potential=delete_options_ignore_store_read_error_with_cluster_breaking_potential)
         pprint(api_response)
     except argo_workflows.ApiException as e:
         print("Exception when calling WorkflowTemplateServiceApi->delete_workflow_template: %s\n" % e)
@@ -11485,6 +11514,7 @@ Name | Type | Description  | Notes
  **delete_options_orphan_dependents** | **bool**| Deprecated: please use the PropagationPolicy, this field will be deprecated in 1.7. Should the dependent objects be orphaned. If true/false, the \&quot;orphan\&quot; finalizer will be added to/removed from the object&#39;s finalizers list. Either this field or PropagationPolicy may be set, but not both. +optional. | [optional]
  **delete_options_propagation_policy** | **str**| Whether and how garbage collection will be performed. Either this field or OrphanDependents may be set, but not both. The default policy is decided by the existing finalizer set in the metadata.finalizers and the resource-specific default policy. Acceptable values are: &#39;Orphan&#39; - orphan the dependents; &#39;Background&#39; - allow the garbage collector to delete the dependents in the background; &#39;Foreground&#39; - a cascading policy that deletes all dependents in the foreground. +optional. | [optional]
  **delete_options_dry_run** | **[str]**| When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed +optional +listType&#x3D;atomic. | [optional]
+ **delete_options_ignore_store_read_error_with_cluster_breaking_potential** | **bool**| if set to true, it will trigger an unsafe deletion of the resource in case the normal deletion flow fails with a corrupt object error. A resource is considered corrupt if it can not be retrieved from the underlying storage successfully because of a) its data can not be transformed e.g. decryption failure, or b) it fails to decode into an object. NOTE: unsafe deletion ignores finalizer constraints, skips precondition checks, and removes the object from the storage. WARNING: This may potentially break the cluster if the workload associated with the resource being unsafe-deleted relies on normal deletion flow. Use only if you REALLY know what you are doing. The default value is false, and the user must opt in to enable it +optional. | [optional]
 
 ### Return type
 
@@ -12653,6 +12683,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     run_as_group=1,
                     run_as_non_root=True,
                     run_as_user=1,
+                    se_linux_change_policy="se_linux_change_policy_example",
                     se_linux_options=SELinuxOptions(
                         level="level_example",
                         role="role_example",
@@ -12666,6 +12697,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     supplemental_groups=[
                         1,
                     ],
+                    supplemental_groups_policy="supplemental_groups_policy_example",
                     sysctls=[
                         Sysctl(
                             name="name_example",
@@ -13378,6 +13410,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             claims=[
                                 ResourceClaim(
                                     name="name_example",
+                                    request="request_example",
                                 ),
                             ],
                             limits={
@@ -13676,6 +13709,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -14887,6 +14921,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -16073,6 +16108,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             claims=[
                                 ResourceClaim(
                                     name="name_example",
+                                    request="request_example",
                                 ),
                             ],
                             limits={
@@ -16188,6 +16224,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         run_as_group=1,
                         run_as_non_root=True,
                         run_as_user=1,
+                        se_linux_change_policy="se_linux_change_policy_example",
                         se_linux_options=SELinuxOptions(
                             level="level_example",
                             role="role_example",
@@ -16201,6 +16238,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         supplemental_groups=[
                             1,
                         ],
+                        supplemental_groups_policy="supplemental_groups_policy_example",
                         sysctls=[
                             Sysctl(
                                 name="name_example",
@@ -16406,6 +16444,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -17397,6 +17436,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 path="path_example",
                                 type="type_example",
                             ),
+                            image=ImageVolumeSource(
+                                pull_policy="pull_policy_example",
+                                reference="reference_example",
+                            ),
                             iscsi=ISCSIVolumeSource(
                                 chap_auth_discovery=True,
                                 chap_auth_session=True,
@@ -18213,6 +18256,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -18511,6 +18555,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                         claims=[
                                             ResourceClaim(
                                                 name="name_example",
+                                                request="request_example",
                                             ),
                                         ],
                                         limits={
@@ -19722,6 +19767,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -20908,6 +20954,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -21023,6 +21070,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             run_as_group=1,
                             run_as_non_root=True,
                             run_as_user=1,
+                            se_linux_change_policy="se_linux_change_policy_example",
                             se_linux_options=SELinuxOptions(
                                 level="level_example",
                                 role="role_example",
@@ -21036,6 +21084,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             supplemental_groups=[
                                 1,
                             ],
+                            supplemental_groups_policy="supplemental_groups_policy_example",
                             sysctls=[
                                 Sysctl(
                                     name="name_example",
@@ -21241,6 +21290,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -22232,6 +22282,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     path="path_example",
                                     type="type_example",
                                 ),
+                                image=ImageVolumeSource(
+                                    pull_policy="pull_policy_example",
+                                    reference="reference_example",
+                                ),
                                 iscsi=ISCSIVolumeSource(
                                     chap_auth_discovery=True,
                                     chap_auth_session=True,
@@ -22762,6 +22816,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         host_path=HostPathVolumeSource(
                             path="path_example",
                             type="type_example",
+                        ),
+                        image=ImageVolumeSource(
+                            pull_policy="pull_policy_example",
+                            reference="reference_example",
                         ),
                         iscsi=ISCSIVolumeSource(
                             chap_auth_discovery=True,
@@ -24152,6 +24210,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     run_as_group=1,
                     run_as_non_root=True,
                     run_as_user=1,
+                    se_linux_change_policy="se_linux_change_policy_example",
                     se_linux_options=SELinuxOptions(
                         level="level_example",
                         role="role_example",
@@ -24165,6 +24224,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                     supplemental_groups=[
                         1,
                     ],
+                    supplemental_groups_policy="supplemental_groups_policy_example",
                     sysctls=[
                         Sysctl(
                             name="name_example",
@@ -24877,6 +24937,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             claims=[
                                 ResourceClaim(
                                     name="name_example",
+                                    request="request_example",
                                 ),
                             ],
                             limits={
@@ -25175,6 +25236,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -26386,6 +26448,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -27572,6 +27635,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             claims=[
                                 ResourceClaim(
                                     name="name_example",
+                                    request="request_example",
                                 ),
                             ],
                             limits={
@@ -27687,6 +27751,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         run_as_group=1,
                         run_as_non_root=True,
                         run_as_user=1,
+                        se_linux_change_policy="se_linux_change_policy_example",
                         se_linux_options=SELinuxOptions(
                             level="level_example",
                             role="role_example",
@@ -27700,6 +27765,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         supplemental_groups=[
                             1,
                         ],
+                        supplemental_groups_policy="supplemental_groups_policy_example",
                         sysctls=[
                             Sysctl(
                                 name="name_example",
@@ -27905,6 +27971,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -28896,6 +28963,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 path="path_example",
                                 type="type_example",
                             ),
+                            image=ImageVolumeSource(
+                                pull_policy="pull_policy_example",
+                                reference="reference_example",
+                            ),
                             iscsi=ISCSIVolumeSource(
                                 chap_auth_discovery=True,
                                 chap_auth_session=True,
@@ -29712,6 +29783,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -30010,6 +30082,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                         claims=[
                                             ResourceClaim(
                                                 name="name_example",
+                                                request="request_example",
                                             ),
                                         ],
                                         limits={
@@ -31221,6 +31294,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -32407,6 +32481,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                 claims=[
                                     ResourceClaim(
                                         name="name_example",
+                                        request="request_example",
                                     ),
                                 ],
                                 limits={
@@ -32522,6 +32597,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             run_as_group=1,
                             run_as_non_root=True,
                             run_as_user=1,
+                            se_linux_change_policy="se_linux_change_policy_example",
                             se_linux_options=SELinuxOptions(
                                 level="level_example",
                                 role="role_example",
@@ -32535,6 +32611,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                             supplemental_groups=[
                                 1,
                             ],
+                            supplemental_groups_policy="supplemental_groups_policy_example",
                             sysctls=[
                                 Sysctl(
                                     name="name_example",
@@ -32740,6 +32817,7 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     claims=[
                                         ResourceClaim(
                                             name="name_example",
+                                            request="request_example",
                                         ),
                                     ],
                                     limits={
@@ -33731,6 +33809,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                                     path="path_example",
                                     type="type_example",
                                 ),
+                                image=ImageVolumeSource(
+                                    pull_policy="pull_policy_example",
+                                    reference="reference_example",
+                                ),
                                 iscsi=ISCSIVolumeSource(
                                     chap_auth_discovery=True,
                                     chap_auth_session=True,
@@ -34261,6 +34343,10 @@ with argo_workflows.ApiClient(configuration) as api_client:
                         host_path=HostPathVolumeSource(
                             path="path_example",
                             type="type_example",
+                        ),
+                        image=ImageVolumeSource(
+                            pull_policy="pull_policy_example",
+                            reference="reference_example",
                         ),
                         iscsi=ISCSIVolumeSource(
                             chap_auth_discovery=True,
