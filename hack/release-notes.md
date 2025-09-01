@@ -24,7 +24,7 @@ if [[ uname -s != "Darwin" ]]; then
 fi
 
 # Download the binary
-curl -sLO "https://github.com/argoproj/argo-workflows/releases/download/$version/argo-$ARGO_OS-amd64.gz"
+curl -sLO "https://github.com/codefresh-io/argo-workflows/releases/download/$version/argo-$ARGO_OS-amd64.gz"
 
 # Unzip
 gunzip "argo-$ARGO_OS-amd64.gz"
@@ -43,5 +43,5 @@ argo version
 
 ```bash
 kubectl create namespace argo
-kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/$version/install.yaml
+kubectl apply -n argo -f https://github.com/codefresh-io/argo-workflows/releases/download/$version/install.yaml
 ```
