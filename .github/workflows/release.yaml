@@ -233,7 +233,7 @@ jobs:
   publish-release:
     permissions:
       contents: write # for softprops/action-gh-release to create GitHub release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-16core
     if: github.repository == 'codefresh-io/argo-workflows'
     needs: [push-images, test-images-linux-amd64, test-images-windows]
     env:
