@@ -21,7 +21,7 @@ require (
 	github.com/evanphx/json-patch v5.8.0+incompatible
 	github.com/expr-lang/expr v1.17.7
 	github.com/gavv/httpexpect/v2 v2.16.0
-	github.com/go-git/go-git/v5 v5.16.5
+	github.com/go-git/go-git/v5 v5.17.1
 	github.com/go-jose/go-jose/v3 v3.0.4
 	github.com/go-openapi/jsonreference v0.21.0
 	github.com/go-sql-driver/mysql v1.7.1
@@ -223,7 +223,7 @@ require (
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
-	github.com/go-git/go-billy/v5 v5.6.2 // indirect
+	github.com/go-git/go-billy/v5 v5.8.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
