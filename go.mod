@@ -21,7 +21,7 @@ require (
 	github.com/evanphx/json-patch v5.8.0+incompatible
 	github.com/expr-lang/expr v1.17.7
 	github.com/gavv/httpexpect/v2 v2.16.0
-	github.com/go-git/go-git/v5 v5.17.1
+	github.com/go-git/go-git/v5 v5.18.0
 	github.com/go-jose/go-jose/v3 v3.0.5
 	github.com/go-openapi/jsonreference v0.21.0
 	github.com/go-sql-driver/mysql v1.7.1
@@ -264,7 +264,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	github.com/moby/spdystream v0.5.0 // indirect
+	github.com/moby/spdystream v0.5.1 // indirect
 	github.com/moby/term v0.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
