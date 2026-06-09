@@ -5,7 +5,7 @@ contact_links:
     url: https://argo-workflows.readthedocs.io/en/latest/
     about: Much help can be found in the docs
   - name: Ask a question
-    url: https://github.com/argoproj/argo-workflows/discussions/new
+    url: https://github.com/codefresh-io/argo-workflows/discussions/new
     about: Ask a question or start a discussion about workflows
   - name: Chat on Slack
     url: https://argoproj.github.io/community/join-slack
