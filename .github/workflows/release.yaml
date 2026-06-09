@@ -22,8 +22,8 @@ permissions:
 jobs:
   build-linux:
     name: Build & push linux
-    if: github.repository == 'argoproj/argo-workflows'
-    # Available runners are listable here if you have access https://github.com/organizations/argoproj/settings/actions/runners
+    if: github.repository == 'codefresh-io/argo-workflows'
+    # Available runners are listable here if you have access https://github.com/organizations/codefresh-io/settings/actions/runners
     # Current oracle runners are:
     # # amd64
     # oracle-vm-2cpu-8gb-x86-64
@@ -114,7 +114,7 @@ jobs:
 
   build-windows:
     name: Build & push windows
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -161,7 +161,7 @@ jobs:
 
   push-images:
     name: Push manifest with all images
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: oracle-vm-4cpu-16gb-x86-64
     needs: [ build-linux, build-windows ]
     steps:
@@ -222,7 +222,7 @@ jobs:
 
   test-images-linux-amd64:
     name: Try pulling linux/amd64
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: oracle-vm-4cpu-16gb-x86-64
     needs: [ push-images ]
     strategy:
@@ -263,7 +263,7 @@ jobs:
 
   test-images-windows:
     name: Try pulling windows
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: windows-2022
     needs: [ push-images ]
     steps:
@@ -297,7 +297,7 @@ jobs:
 
   build-ui:
     name: Build UI
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     runs-on: oracle-vm-16cpu-64gb-x86-64
     env:
       NODE_OPTIONS: --max-old-space-size=4096
@@ -324,7 +324,7 @@ jobs:
 
   build-clis:
     name: Build CLI ${{ matrix.goos }}-${{ matrix.goarch }}
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     needs: [ build-ui ]
     runs-on: oracle-vm-8cpu-32gb-x86-64
     strategy:
@@ -383,7 +383,7 @@ jobs:
     permissions:
       contents: write  # for softprops/action-gh-release to create GitHub release
     runs-on: oracle-vm-16cpu-64gb-x86-64
-    if: github.repository == 'argoproj/argo-workflows'
+    if: github.repository == 'codefresh-io/argo-workflows'
     needs: [ push-images, test-images-linux-amd64, test-images-windows, build-clis ]
     env:
       NODE_OPTIONS: --max-old-space-size=4096
@@ -417,10 +417,10 @@ jobs:
       - run: generator -o dist -p .
       - run: yarn --cwd ui install
       - run: generator -o dist -p ui
-      - run: bom generate --image quay.io/argoproj/workflow-controller:$VERSION -o dist/workflow-controller.spdx
-      - run: bom generate --image quay.io/argoproj/argocli:$VERSION -o dist/argocli.spdx
-      - run: bom generate --image quay.io/argoproj/argoexec:$VERSION -o dist/argoexec.spdx
-      - run: bom generate --image quay.io/argoproj/argoexec:$VERSION-nonroot -o dist/argoexec-nonroot.spdx
+      - run: bom generate --image quay.io/codefresh-io/workflow-controller:$VERSION -o dist/workflow-controller.spdx
+      - run: bom generate --image quay.io/codefresh-io/argocli:$VERSION -o dist/argocli.spdx
+      - run: bom generate --image quay.io/codefresh-io/argoexec:$VERSION -o dist/argoexec.spdx
+      - run: bom generate --image quay.io/codefresh-io/argoexec:$VERSION-nonroot -o dist/argoexec-nonroot.spdx
       # pack the boms into one file to make it easy to download
       - run: tar -zcf dist/sbom.tar.gz dist/*.spdx
       - run: make release-notes VERSION=$VERSION
