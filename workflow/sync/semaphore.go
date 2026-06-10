@@ -160,12 +160,30 @@ func (s *prioritySemaphore) removeFromQueue(holderKey string) error {
 	return nil
 }
 
-func (s *prioritySemaphore) acquire(holderKey string, _ *transaction) bool {
+func (s *prioritySemaphore) acquire(holderKey string, _ *transaction) (bool, error) {
 	if s.semaphore.TryAcquire(1) {
 		s.lockHolder[holderKey] = true
-		return true
+		return true, nil
 	}
-	return false
+	return false, nil
+}
+
+// reacquire re-establishes a recorded holder at startup, ignoring the limit. It
+// always registers the holder, even when the recorded holders already exceed the
+// current limit (e.g. the limit was lowered while held). The weighted semaphore
+// is capped at the limit, so a slot is only taken when one is free; the excess is
+// tracked solely in lockHolder, exactly as a downward resize leaves it. release()
+// already tolerates len(lockHolder) > limit and only frees a weighted slot once
+// the count drops below the limit, so new acquisitions wait until every recorded
+// holder has drained. It never fails: the in-memory map is the source of truth
+// here, so registering the holder is always possible.
+func (s *prioritySemaphore) reacquire(holderKey string, _ *transaction) error {
+	if _, ok := s.lockHolder[holderKey]; ok {
+		return nil
+	}
+	s.semaphore.TryAcquire(1) // best effort: take a slot if one is free
+	s.lockHolder[holderKey] = true
+	return nil
 }
 
 func isSameWorkflowNodeKeys(firstKey, secondKey string) bool {
@@ -226,23 +244,24 @@ func (s *prioritySemaphore) checkAcquire(holderKey string, _ *transaction) (bool
 	return false, false, waitingMsg
 }
 
-func (s *prioritySemaphore) tryAcquire(holderKey string, tx *transaction) (bool, string) {
+func (s *prioritySemaphore) tryAcquire(holderKey string, tx *transaction) (bool, string, error) {
 	acq, already, msg := s.checkAcquire(holderKey, tx)
 	if already {
-		return true, msg
+		return true, msg, nil
 	}
 	if !acq {
-		return false, msg
+		return false, msg, nil
 	}
-	if s.acquire(holderKey, tx) {
+	acquired, _ := s.acquire(holderKey, tx)
+	if acquired {
 		s.pending.pop()
 		limit := s.getLimit()
 		s.log.Infof("%s acquired by %s. Lock availability: %d/%d", s.name, holderKey, limit-len(s.lockHolder), limit)
 		s.notifyWaiters()
-		return true, ""
+		return true, "", nil
 	}
 	s.log.Debugf("Current semaphore Holders. %v", s.lockHolder)
-	return false, msg
+	return false, msg, nil
 }
 
 func (s *prioritySemaphore) probeWaiting() {}

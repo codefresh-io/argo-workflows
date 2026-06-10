@@ -416,12 +416,12 @@ func (s *databaseSemaphore) checkAcquire(holderKey string, tx *transaction) (boo
 	return true, false, ""
 }
 
-func (s *databaseSemaphore) acquire(holderKey string, tx *transaction) bool {
+func (s *databaseSemaphore) acquire(holderKey string, tx *transaction) (bool, error) {
 	limit := s.getLimit()
 	existing, err := s.currentHoldersSession(*tx.db)
 	if err != nil {
 		s.log.WithField("key", holderKey).WithError(err).Error("Failed to acquire lock")
-		return false
+		return false, err
 	}
 	if len(existing) < limit {
 		var pending []stateRecord
@@ -435,7 +435,7 @@ func (s *databaseSemaphore) acquire(holderKey string, tx *transaction) bool {
 			All(&pending)
 		if err != nil {
 			s.log.WithField("key", holderKey).WithError(err).Error("Failed to acquire lock")
-			return false
+			return false, err
 		}
 		if len(pending) > 0 {
 			_, err := (*tx.db).SQL().Update(s.info.config.stateTable).
@@ -447,7 +447,7 @@ func (s *databaseSemaphore) acquire(holderKey string, tx *transaction) bool {
 				Exec()
 			if err != nil {
 				s.log.WithField("key", holderKey).WithError(err).Error("Failed to acquire lock")
-				return false
+				return false, err
 			}
 		} else {
 			record := &stateRecord{
@@ -459,14 +459,14 @@ func (s *databaseSemaphore) acquire(holderKey string, tx *transaction) bool {
 			_, err := (*tx.db).Collection(s.info.config.stateTable).Insert(record)
 			if err != nil {
 				s.log.WithField("key", holderKey).WithError(err).Error("Failed to acquire lock")
-				return false
+				return false, err
 			}
 		}
 		s.log.WithFields(log.Fields{
 			"key":    holderKey,
 			"result": true,
 		}).Info("Acquire succeeded")
-		return true
+		return true, nil
 	}
 	s.log.WithFields(log.Fields{
 		"key":             holderKey,
@@ -475,10 +475,29 @@ func (s *databaseSemaphore) acquire(holderKey string, tx *transaction) bool {
 		"current_holders": len(existing),
 		"limit":           limit,
 	}).Info("Acquire failed")
-	return false
+	return false, nil
 }
 
-func (s *databaseSemaphore) tryAcquire(holderKey string, tx *transaction) (bool, string) {
+// reacquire asserts at startup that the recorded holder still holds this lock
+// in the database. The database is the single source of truth for a
+// database-backed lock: the held row is durable and survives the controller
+// restart, so nothing is inserted or mutated here. A missing row means the
+// hold no longer exists - e.g. it was expired by ExpireInactiveLocks while the
+// controller was down and may since have been acquired by another holder - so
+// the workflow's recorded hold is stale and the caller fails the workflow
+// rather than resurrect a hold the database does not back.
+func (s *databaseSemaphore) reacquire(holderKey string, tx *transaction) error {
+	holders, err := s.currentHoldersSession(*tx.db)
+	if err != nil {
+		return fmt.Errorf("could not verify hold on %s for %s: %w", s.longDBKey(), holderKey, err)
+	}
+	if !slices.Contains(holders, holderKey) {
+		return fmt.Errorf("hold on %s for %s is not present in the database", s.longDBKey(), holderKey)
+	}
+	return nil
+}
+
+func (s *databaseSemaphore) tryAcquire(holderKey string, tx *transaction) (bool, string, error) {
 	acq, already, msg := s.checkAcquire(holderKey, tx)
 	if already {
 		s.log.WithFields(log.Fields{
@@ -486,7 +505,7 @@ func (s *databaseSemaphore) tryAcquire(holderKey string, tx *transaction) (bool,
 			"result":  true,
 			"message": msg,
 		}).Info("tryAcquire - already held")
-		return true, msg
+		return true, msg, nil
 	}
 	if !acq {
 		s.log.WithFields(log.Fields{
@@ -494,22 +513,24 @@ func (s *databaseSemaphore) tryAcquire(holderKey string, tx *transaction) (bool,
 			"result":  false,
 			"message": msg,
 		}).Info("tryAcquire - cannot acquire")
-		return false, msg
+		return false, msg, nil
 	}
-	if s.acquire(holderKey, tx) {
+	acquired, err := s.acquire(holderKey, tx)
+	if acquired {
 		s.log.WithFields(log.Fields{
 			"key":    holderKey,
 			"result": true,
 		}).Info("tryAcquire succeeded")
 		s.notifyWaiters()
-		return true, ""
+		return true, "", nil
 	}
 	s.log.WithFields(log.Fields{
 		"key":     holderKey,
 		"result":  false,
 		"message": msg,
+		"error":   err,
 	}).Info("tryAcquire failed")
-	return false, msg
+	return false, msg, err
 }
 
 func (s *databaseSemaphore) expireLocks() {
