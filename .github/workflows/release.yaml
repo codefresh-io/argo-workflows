@@ -41,7 +41,7 @@ jobs:
     # oracle-vm-24cpu-96gb-arm64
     # oracle-vm-32cpu-128gb-arm64
     # Unfortunately there are no more minimal labels on the runners to select by label
-    runs-on: ${{ matrix.platform == 'linux/arm64' && 'oracle-vm-16cpu-64gb-arm64' || 'oracle-vm-16cpu-64gb-x86-64' }}
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         platform: [ linux/amd64, linux/arm64 ]
@@ -151,7 +151,7 @@ jobs:
   push-images:
     name: Push manifest with all images
     if: github.repository == 'codefresh-io/argo-workflows'
-    runs-on: oracle-vm-4cpu-16gb-x86-64
+    runs-on: ubuntu-24.04
     needs: [ build-linux, build-windows ]
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -206,7 +206,7 @@ jobs:
   test-images-linux-amd64:
     name: Try pulling linux/amd64
     if: github.repository == 'codefresh-io/argo-workflows'
-    runs-on: oracle-vm-4cpu-16gb-x86-64
+    runs-on: ubuntu-24.04
     needs: [ push-images ]
     strategy:
       matrix:
@@ -269,7 +269,7 @@ jobs:
   build-ui:
     name: Build UI
     if: github.repository == 'codefresh-io/argo-workflows'
-    runs-on: oracle-vm-16cpu-64gb-x86-64
+    runs-on: ubuntu-24.04
     env:
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
@@ -297,7 +297,7 @@ jobs:
     name: Build CLI ${{ matrix.goos }}-${{ matrix.goarch }}
     if: github.repository == 'codefresh-io/argo-workflows'
     needs: [ build-ui ]
-    runs-on: oracle-vm-8cpu-32gb-x86-64
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         include:
@@ -353,7 +353,7 @@ jobs:
   publish-release:
     permissions:
       contents: write  # for softprops/action-gh-release to create GitHub release
-    runs-on: oracle-vm-16cpu-64gb-x86-64
+    runs-on: ubuntu-24.04-16core
     if: github.repository == 'codefresh-io/argo-workflows'
     needs: [ push-images, test-images-linux-amd64, test-images-windows, build-clis ]
     env:
