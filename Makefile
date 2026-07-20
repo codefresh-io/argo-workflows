@@ -345,7 +345,7 @@ endif
 $(GOPATH)/bin/swagger: Makefile
 # update this in Nix when upgrading it here
 ifneq ($(USE_NIX), true)
-	go install github.com/go-swagger/go-swagger/cmd/swagger@v0.31.0
+	go install github.com/go-swagger/go-swagger/cmd/swagger@v0.33.1
 endif
 $(GOPATH)/bin/goimports: Makefile
 # update this in Nix when upgrading it here
