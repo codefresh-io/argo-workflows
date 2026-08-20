@@ -1,0 +1,14 @@
+workflow/artifacts/gcs/gcs.go
+  h_51acfbafc7319b 80,82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "fd830bc38275a4e212489a6a35715b6f34bcf2a1",
+  "prompts": {},
+  "humans": {
+    "h_51acfbafc7319b": {
+      "author": "vitaliichyrka <vitalii.chyrka@codefresh.io>"
+    }
+  }
+}
