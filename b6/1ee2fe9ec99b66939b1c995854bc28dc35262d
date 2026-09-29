@@ -1,0 +1,14 @@
+.github/workflows/ci-build.yaml
+  h_9fd7d1a18c4091 132,270,409,446
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b61ee2fe9ec99b66939b1c995854bc28dc35262d",
+  "prompts": {},
+  "humans": {
+    "h_9fd7d1a18c4091": {
+      "author": "Alina <alina.shportiuk@codefresh.io>"
+    }
+  }
+}
