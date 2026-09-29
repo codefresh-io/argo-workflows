@@ -1,0 +1,26 @@
+manifests/quick-start/base/minio/minio-deploy.yaml
+  s_e2c8daaf06495e::t_0804556381dd6c 32
+  s_e2c8daaf06495e::t_5304f230d2b154 19-21,23,25
+manifests/quick-start-minimal.yaml
+  s_e2c8daaf06495e::t_2e5e52204a9fe6 3755,3761,3763,3765
+manifests/quick-start-mysql.yaml
+  s_e2c8daaf06495e::t_60796d5c19d022 3799,3805,3807,3809
+manifests/quick-start-postgres.yaml
+  s_e2c8daaf06495e::t_109a526c7a781e 3799,3805,3807,3809
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "71d0cd33f0a29985c7687c8ebdc0307ad9a50608",
+  "prompts": {},
+  "sessions": {
+    "s_e2c8daaf06495e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ea872202-0c61-4c20-a3a5-47007527b537",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Alina <alina.shportiuk@codefresh.io>"
+    }
+  }
+}
