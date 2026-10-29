@@ -1,0 +1,22 @@
+.github/workflows/ci-build.yaml
+  h_9fd7d1a18c4091 154
+.github/workflows/docs.yaml
+  h_9fd7d1a18c4091 40
+.github/workflows/release.yaml
+  h_9fd7d1a18c4091 248
+Dockerfile.windows
+  h_9fd7d1a18c4091 14
+go.mod
+  h_9fd7d1a18c4091 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "66f196374a1ba5d26c17986c9d4ad67eaf41d66b",
+  "prompts": {},
+  "humans": {
+    "h_9fd7d1a18c4091": {
+      "author": "Alina <alina.shportiuk@codefresh.io>"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+go.mod
+  h_9fd7d1a18c4091 63,66,70,302-305
+go.sum
+  h_9fd7d1a18c4091 938-939,1000-1001,1021-1022,1074-1075,1090-1091,1108-1109,1141-1142,1175-1176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ed7eaad279a444e661f4a73450e8b0801fb9dac5",
+  "prompts": {},
+  "humans": {
+    "h_9fd7d1a18c4091": {
+      "author": "Alina <alina.shportiuk@codefresh.io>"
+    }
+  }
+}

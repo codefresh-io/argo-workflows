@@ -1,0 +1,16 @@
+go.mod
+  h_9fee6e699064f1 33,57,60-62,152,227
+go.sum
+  h_9fee6e699064f1 333-334,456-457,876-877,884-893
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e297a8f7189b2167a441a509cf37370620a3dcaf",
+  "prompts": {},
+  "humans": {
+    "h_9fee6e699064f1": {
+      "author": "Vadim Kharin <vadim.kharin@codefresh.io>"
+    }
+  }
+}
