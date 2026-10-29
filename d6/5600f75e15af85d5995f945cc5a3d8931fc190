@@ -1,0 +1,19 @@
+Dockerfile
+  h_51acfbafc7319b 6
+go.mod
+  h_51acfbafc7319b 256
+  h_51acfbafc7319b 105,156
+go.sum
+  h_51acfbafc7319b 581-582
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d65600f75e15af85d5995f945cc5a3d8931fc190",
+  "prompts": {},
+  "humans": {
+    "h_51acfbafc7319b": {
+      "author": "vitaliichyrka <vitalii.chyrka@codefresh.io>"
+    }
+  }
+}
