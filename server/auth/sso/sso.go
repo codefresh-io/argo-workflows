@@ -17,8 +17,9 @@ import (
 
 	pkgrand "github.com/argoproj/pkg/rand"
 	"github.com/coreos/go-oidc/v3/oidc"
-	"github.com/go-jose/go-jose/v3"
-	"github.com/go-jose/go-jose/v3/jwt"
+	"github.com/go-jose/go-jose/v4"
+	josejson "github.com/go-jose/go-jose/v4/json"
+	"github.com/go-jose/go-jose/v4/jwt"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	apiv1 "k8s.io/api/core/v1"
@@ -324,7 +325,7 @@ func (s *sso) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		PreferredUsername:       c.PreferredUsername,
 		ServiceAccountNamespace: c.ServiceAccountNamespace,
 	}
-	raw, err := jwt.Encrypted(s.encrypter).Claims(argoClaims).CompactSerialize()
+	raw, err := jwt.Encrypted(s.encrypter).Claims(argoClaims).Serialize()
 	if err != nil {
 		log.WithError(err).Errorf("failed to encrypt and serialize the jwt token")
 		w.WriteHeader(401)
@@ -356,12 +357,20 @@ func (s *sso) HandleCallback(w http.ResponseWriter, r *http.Request) {
 
 // authorize verifies a bearer token and pulls user information form the claims.
 func (s *sso) Authorize(authorization string) (*types.Claims, error) {
-	tok, err := jwt.ParseEncrypted(strings.TrimPrefix(authorization, Prefix))
+	// go-jose v4's jwt.ParseEncrypted rejects asymmetric key algorithms, so the token is
+	// parsed with the JWE API instead. This keeps the existing RSA-OAEP-256 token format
+	// (and existing sessions) working. The key pair never leaves argo-server, so only
+	// argo-server can mint these tokens.
+	tok, err := jose.ParseEncryptedCompact(strings.TrimPrefix(authorization, Prefix), []jose.KeyAlgorithm{jose.RSA_OAEP_256}, []jose.ContentEncryption{jose.A256GCM})
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse encrypted token %v", err)
 	}
+	payload, err := tok.Decrypt(s.privateKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse claims: %v", err)
+	}
 	c := &types.Claims{}
-	if err := tok.Claims(s.privateKey, c); err != nil {
+	if err := josejson.Unmarshal(payload, c); err != nil {
 		return nil, fmt.Errorf("failed to parse claims: %v", err)
 	}
 
