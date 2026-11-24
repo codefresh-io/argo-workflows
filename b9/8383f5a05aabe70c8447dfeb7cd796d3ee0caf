@@ -1,0 +1,50 @@
+server/auth/gatekeeper_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 7
+server/info/info_server_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 7
+server/auth/types/claims_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 10
+server/auth/serviceaccount/claims.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 10
+workflow/creator/creator_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 8
+server/workflow/workflow_server_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 9
+workflow/util/util_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 11
+server/cronworkflow/cron_workflow_server_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 7
+server/auth/types/claims.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 8
+server/auth/sso/sso.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 20,22
+  s_8b504730f6d25f::t_ae6e1a6c5e34d8 21
+  s_8b504730f6d25f::t_76989c94f39ad3 328
+  s_8b504730f6d25f::t_331d5577fb357f 360-364,368-371,373
+server/event/dispatch/operation_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 10
+server/workflowtemplate/workflow_template_server_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 7
+go.mod
+  s_8b504730f6d25f::t_c9cc28a7450cb5 19,25
+server/clusterworkflowtemplate/cluster_workflow_template_server_test.go
+  s_8b504730f6d25f::t_d48509ae40fbcc 7
+go.sum
+  s_8b504730f6d25f::t_f46325f392ef40 216-217,321-322
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b98383f5a05aabe70c8447dfeb7cd796d3ee0caf",
+  "prompts": {},
+  "sessions": {
+    "s_8b504730f6d25f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "32e4ba16-4690-4792-b13b-9d0265879d72",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Bohdan Pysarenko <bohdan.pisarenko@octopus.com>"
+    }
+  }
+}
